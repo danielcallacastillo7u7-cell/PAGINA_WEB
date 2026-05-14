@@ -1,10 +1,10 @@
 const mysql = require('mysql2');
-require('dotenv').config(); // Esto tiene que estar SI O SI aquí
+require('dotenv').config();
 
-const pool = mysql.createConnection({
+const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',      // Si falla el .env, usará 'root'
-    password: process.env.DB_PASSWORD || '',   // Si falla el .env, usará vacío
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'club_catarindo',
     waitForConnections: true,
     connectionLimit: 10,
@@ -12,13 +12,13 @@ const pool = mysql.createConnection({
 });
 
 // Prueba de conexión inmediata
-pool.getConnection()
-    .then(conn => {
-        console.log("✅ Conexión a MySQL exitosa desde db.js");
-        conn.release();
-    })
-    .catch(err => {
-        console.error("❌ Error en db.js:", err.message);
-    });
+pool.getConnection((err, connection) => {
+    if (err) {
+        console.error('Error conectando a la BD:', err.message);
+        return;
+    }
+    console.log('Conexión a la base de datos exitosa ✅');
+    connection.release();
+});
 
-module.exports = pool;
+module.exports = pool.promise();

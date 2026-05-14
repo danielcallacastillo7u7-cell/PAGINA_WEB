@@ -1,9 +1,8 @@
-const API = '[https://club-production-ed73.up.railway.app/]';
-
+const API_URL = "http://localhost:3000/api";
 // --- LOGIN Y REGISTRO DE SOCIOS ---
 export const loginSocio = async (correo, contrasena) => {
     try {
-        const res = await fetch(`${API}/auth/login`, {
+        const res = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ correo, contrasena })
@@ -17,7 +16,7 @@ export const loginSocio = async (correo, contrasena) => {
 
 export const registrarSocio = async (form) => {
     try {
-        const res = await fetch(`${API}/auth/registro`, {
+        const res = await fetch(`${API_URL}/auth/registro`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(form)
@@ -35,7 +34,7 @@ export const registrarSocio = async (form) => {
 export const loginAdmin = async (usuario, dni, contrasena) => {
     try {
         // Quitamos el "/auth" de la URL
-        const res = await fetch(`${API}/admin/login`, { 
+        const res = await fetch(`${API_URL}/admin/login`, { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ usuario, dni, contrasena })
@@ -51,7 +50,7 @@ export const loginAdmin = async (usuario, dni, contrasena) => {
 export const verificarCodigo = async (codigo, adminId) => {
     try {
         // Quitamos el "/auth" de la URL
-        const res = await fetch(`${API}/admin/verificar-codigo`, {
+        const res = await fetch(`${API_URL}/admin/verificar-codigo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ codigo, adminId })
@@ -66,7 +65,7 @@ export const verificarCodigo = async (codigo, adminId) => {
 // --- RECUPERACIÓN DE CONTRASEÑA SOCIOS ---
 export const solicitarRecuperacion = async (correo) => {
     try {
-        const res = await fetch(`${API}/auth/recuperar`, {
+        const res = await fetch(`${API_URL}/auth/recuperar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ correo })
@@ -80,7 +79,7 @@ export const solicitarRecuperacion = async (correo) => {
 
 export const verificarCodigoRecuperacion = async (codigo, socioId) => {
     try {
-        const res = await fetch(`${API}/auth/recuperar/verificar`, {
+        const res = await fetch(`${API_URL}/auth/recuperar/verificar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ codigo, socioId })
@@ -94,7 +93,7 @@ export const verificarCodigoRecuperacion = async (codigo, socioId) => {
 
 export const cambiarContrasena = async (socioId, codigoId, nuevaContrasena) => {
     try {
-        const res = await fetch(`${API}/auth/recuperar/cambiar`, {
+        const res = await fetch(`${API_URL}/auth/recuperar/cambiar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ socioId, codigoId, nuevaContrasena })

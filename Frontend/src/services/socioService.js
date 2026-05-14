@@ -1,8 +1,7 @@
-const API = '[https://club-production-ed73.up.railway.app/]';
-
+const API_URL = "http://localhost:3000/api";
 export const getPerfil = async (token) => {
     try {
-        const res = await fetch(`${API}/socio/perfil`, {
+        const res = await fetch(`${API_URL}/socio/perfil`, {
         headers: { 'Authorization': `Bearer ${token}` }
         })
         const data = await res.json()
@@ -16,7 +15,7 @@ export const getPerfil = async (token) => {
 
     export const getCuentaMensual = async (token) => {
     try {
-        const res = await fetch(`${API}/socio/cuenta`, {
+        const res = await fetch(`${API_URL}/socio/cuenta`, {
         headers: { 'Authorization': `Bearer ${token}` }
         })
         const data = await res.json()
@@ -29,7 +28,7 @@ export const getPerfil = async (token) => {
 
     export const getConsumos = async (token) => {
     try {
-        const res = await fetch(`${API}/socio/consumos`, {
+        const res = await fetch(`${API_URL}/socio/consumos`, {
         headers: { 'Authorization': `Bearer ${token}` }
         })
         const data = await res.json()
@@ -42,7 +41,7 @@ export const getPerfil = async (token) => {
 
     export const getPagos = async (token) => {
     try {
-        const res = await fetch(`${API}/socio/pagos`, {
+        const res = await fetch(`${API_URL}/socio/pagos`, {
         headers: { 'Authorization': `Bearer ${token}` }
         })
         const data = await res.json()
@@ -55,7 +54,7 @@ export const getPerfil = async (token) => {
 
     export const enviarPago = async (token, formData) => {
     try {
-        const res = await fetch(`${API}/socio/pago`, {
+        const res = await fetch(`${API_URL}/socio/pago`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -71,7 +70,7 @@ export const getPerfil = async (token) => {
 
 export const getPublicaciones = async (token) => {
     try {
-        const resp = await fetch('TU_API_URL/publicaciones', { // Ajusta la URL de tu API
+        const resp = await fetch('TU_API_URL_URL/publicaciones', { // Ajusta la URL de tu API_URL
             headers: { 'Authorization': `Bearer ${token}` }
         });
         return await resp.json();
@@ -82,7 +81,7 @@ export const getPublicaciones = async (token) => {
 
 export const postPublicacion = async (token, texto) => {
     try {
-        const resp = await fetch('TU_API_URL/publicaciones', {
+        const resp = await fetch('TU_API_URL_URL/publicaciones', {
             method: 'POST',
             headers: { 
                 'Authorization': `Bearer ${token}`,
