@@ -7,7 +7,11 @@ const app = express()
 
 // Middlewares
 app.use(cors({
-    origin: ['http://localhost:5173'],
+    origin: [
+        'http://localhost:5173',
+        'https://pagina-web-psi-two.vercel.app',
+        'https://pagina-web-vh21.vercel.app'
+    ],
     credentials: true
 }));
 app.use(express.json({ limit: '50mb' }));
