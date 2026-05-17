@@ -1,5 +1,5 @@
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://paginaweb-production-89df.up.railway.app/api";
 // Función auxiliar para armar los headers con el token
 const getHeaders = (token) => ({
     'Content-Type': 'application/json',

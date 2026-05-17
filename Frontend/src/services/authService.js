@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://paginaweb-production-89df.up.railway.app/api";
 // --- LOGIN Y REGISTRO DE SOCIOS ---
 export const loginSocio = async (correo, contrasena) => {
     try {

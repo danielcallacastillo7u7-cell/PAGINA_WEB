@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://paginaweb-production-89df.up.railway.app/api";
 export const getPerfil = async (token) => {
     try {
         const res = await fetch(`${API_URL}/socio/perfil`, {
