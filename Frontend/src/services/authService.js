@@ -34,7 +34,7 @@ export const registrarSocio = async (form) => {
 export const loginAdmin = async (usuario, dni, contrasena) => {
     try {
         // Quitamos el "/auth" de la URL
-        const res = await fetch(`${API_URL}/admin/login`, { 
+        const res = await fetch(`${API_URL}/auth/login-admin`, { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ usuario, dni, contrasena })
@@ -50,7 +50,7 @@ export const loginAdmin = async (usuario, dni, contrasena) => {
 export const verificarCodigo = async (codigo, adminId) => {
     try {
         // Quitamos el "/auth" de la URL
-        const res = await fetch(`${API_URL}/admin/verificar-codigo`, {
+        const res = await fetch(`${API_URL}/auth/verificar-codigo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ codigo, adminId })
