@@ -1,16 +1,17 @@
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend'); // ← cambiar nodemailer
 const db = require('../config/db');
+const resend = new Resend(process.env.RESEND_API_KEY); // ← instancia global
+
 
 // Login socio
 const loginSocio = async (req, res) => {
     try {
         const { correo, contrasena } = req.body;
         console.log("Intentando login para:", correo);
-
-        const result = await db.query('SELECT * FROM socios WHERE correo = $1', [correo]);
+    const result = await db.query('SELECT * FROM socios WHERE correo = $1', [correo]);
 
         if (result.rows.length === 0) {
             return res.status(401).json({ error: 'Correo o contraseña incorrectos' });
@@ -64,25 +65,14 @@ const loginAdmin = async (req, res) => {
             "INSERT INTO codigos_verificacion (admin_id, codigo, expira_at) VALUES ($1, $2, NOW() + INTERVAL '10 minutes')",
             [admin.id, codigo]
         );
-
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    family: 4,          // ← fuerza IPv4
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-        });
-
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: admin.correo,
-            subject: 'Código de verificación - Club Catarindo',
-            html: `<h2>Tu código de verificación es: <strong>${codigo}</strong></h2>
+        
+await resend.emails.send({
+    from: 'onboarding@resend.dev',
+    to: admin.correo,
+    subject: 'Código de verificación - Club Catarindo',
+    html: `<h2>Tu código de verificación es: <strong>${codigo}</strong></h2>
         <p>Este código expira en 10 minutos.</p>`
-        });
+});
 
         res.json({ mensaje: 'Código enviado al correo', adminId: admin.id });
 
