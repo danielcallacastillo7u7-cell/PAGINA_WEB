@@ -1071,35 +1071,264 @@
     .toast-warning { background: rgba(38,30,10,.95); color: #d4a84b; border: 1px solid rgba(212,168,75,.25); }
     .toast-info    { background: rgba(16,22,38,.95); color: #7ab4e0; border: 1px solid rgba(74,158,221,.25); }
 
-    /* ── Responsive ─────────────────────────────── */
-    @media (max-width: 900px) {
-    .admin { flex-direction: column; }
+/* ── Responsive Tablet (< 1024px) ──────────────── */
+@media (max-width: 1024px) {
+    .admin-sidebar {
+        width: 200px;
+        min-width: 200px;
+        padding: 1.25rem .75rem;
+    }
+    .admin-main {
+        padding: 1.5rem 1.25rem;
+    }
+}
 
+/* ── Responsive Mobile (< 768px) ───────────────── */
+@media (max-width: 768px) {
+    .admin {
+        flex-direction: column;
+        padding-bottom: 70px; /* espacio para nav inferior */
+    }
+
+    /* Sidebar se convierte en nav inferior fija */
     .admin-sidebar {
         width: 100%;
         min-width: unset;
-        height: auto;
-        position: static;
-        padding: 1rem;
+        height: 64px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: unset;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 .5rem;
+        z-index: 999;
+        border-top: 1px solid rgba(255,255,255,.07);
+        overflow: visible;
     }
 
-    .admin-nav { flex-direction: row; flex-wrap: wrap; gap: 6px; }
-    .admin-nav button { flex: 1 1 auto; justify-content: center; padding: 8px 10px; font-size: 12px; }
-    .admin-sidebar-header { flex-direction: row; padding-bottom: .75rem; }
-
-    .admin-main { padding: 1.25rem 1rem; }
-    .fns-fila { grid-template-columns: 1fr; }
-    .form-fila { grid-template-columns: 1fr; }
+    /* Ocultar header y footer del sidebar en mobile */
+    .admin-sidebar-header,
+    .sidebar-footer {
+        display: none;
     }
 
-    @media (max-width: 520px) {
-    .admin-cards { grid-template-columns: 1fr 1fr; }
-    .tabla { font-size: 12px; }
-    .tabla thead th, .tabla tbody td { padding: 9px 10px; }
+    /* Nav horizontal centrada */
+    .admin-nav {
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        gap: 0;
+    }
+
+    .admin-nav button {
+        flex-direction: column;
+        gap: 3px;
+        padding: 6px 4px;
+        font-size: 9px;
+        border-radius: 10px;
+        min-width: 52px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .admin-nav button svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .sidebar-badge {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 9px;
+    }
+
+    /* Main ocupa toda la pantalla */
+    .admin-main {
+        padding: 1rem .9rem;
+        min-height: calc(100vh - 64px);
+    }
+
+    .admin-main h2 {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Header con botón abajo del título */
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .75rem;
+    }
+
+    .btn-nuevo {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Buscador full width */
+    .admin-buscador input {
+        max-width: 100%;
+    }
+
+    /* Cards 2 columnas */
+    .admin-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 1.25rem;
+    }
+
+    /* Tabla con scroll horizontal */
+    .tabla {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Reportes 1 columna */
+    .reportes-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    /* Toast abajo a la izquierda para no tapar nav */
+    .toast-container {
+        bottom: 80px;
+        right: 1rem;
+        left: 1rem;
+    }
+
+    .toast {
+        max-width: 100%;
+    }
+}
+
+/* ── Responsive muy pequeño (< 400px) ──────────── */
+@media (max-width: 400px) {
+    .admin-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .reportes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-nav button {
+        font-size: 8px;
+        min-width: 44px;
+        padding: 5px 2px;
+    }
+
+    .fns-fila,
+    .form-fila {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
+}
+/* ── Mejoras visuales mobile ────────────────────── */
+@media (max-width: 768px) {
+
+    /* Tabla con cards en vez de filas en mobile */
+    .tabla thead { display: none; }
+
+    .tabla tbody tr {
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-card);
+        border-radius: 14px;
+        margin-bottom: 10px;
+        padding: 14px 16px;
+        border: 1px solid var(--border-card);
+        box-shadow: var(--shadow-card);
+        white-space: normal;
+    }
+
+    .tabla tbody tr:hover td { background: none; }
+
+    .tabla tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--border-table);
+        font-size: 13px;
+    }
+
+    .tabla tbody td:last-child { border-bottom: none; padding-bottom: 0; }
+    .tabla tbody td:first-child { padding-top: 0; }
+
+    /* Etiquetas automáticas para cada celda */
+    .tabla tbody td::before {
+        content: attr(data-label);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--text-hint);
+        min-width: 90px;
+    }
+
+    /* Nav inferior más pulida */
+    .admin-nav button {
+        border-radius: 12px;
+        padding: 8px 6px 6px;
+        transition: background .2s, color .2s, transform .15s;
+    }
+
+    .admin-nav button.activo {
+        background: rgba(201,168,76,.18);
+        transform: translateY(-3px);
+    }
+
+    .admin-nav button.activo svg {
+        filter: drop-shadow(0 2px 6px rgba(201,168,76,.4));
+    }
+
+    /* Header más compacto */
+    .admin-main h2 {
+        font-size: 1.5rem;
+        margin-bottom: .75rem;
+    }
+
+    /* Cards métricas más compactas */
+    .admin-card {
+        padding: .9rem 1rem;
+    }
+
+    .admin-card h3 {
+        font-size: 1.4rem;
+    }
+
+    .admin-card p {
+        font-size: 10px;
+    }
+
+    /* Buscador con icono */
+    .admin-buscador input {
+        height: 46px;
+        border-radius: 14px;
+        font-size: 14px;
+        padding: 0 18px;
+    }
+
+    /* Botón nuevo socio */
+    .btn-nuevo {
+        height: 46px;
+        border-radius: 12px;
+        font-size: 14px;
+    }
 }
 
 /* ── Keyframes ──────────────────────────────── */

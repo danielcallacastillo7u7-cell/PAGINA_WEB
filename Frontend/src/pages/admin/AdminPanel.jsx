@@ -589,328 +589,327 @@ function AdminPanel() {
             cargarDatos()
         }
     }
-
-    return (
-        <div className="admin" data-theme={tema}>
+return (
+    <div className="admin" data-theme={tema}>
         <aside className="admin-sidebar">
-        <div className="admin-sidebar-header">
-                    <ShieldCog className="icono-admin" />
-                    <h3>Panel Admin</h3>
-                    <p>Club Catarindo</p>
-                </div>
+            <div className="admin-sidebar-header">
+                <ShieldCog className="icono-admin" />
+                <h3>Panel Admin</h3>
+                <p>Club Catarindo</p>
+            </div>
             <nav className="admin-nav">
-                    <button className={seccion === 'socios'    ? 'activo' : ''} onClick={() => setSeccion('socios')}>
-                        <Users /> Gestión de Socios
-                    </button>
-                    <button className={seccion === 'finanzas'  ? 'activo' : ''} onClick={() => setSeccion('finanzas')}>
-                        <Landmark /> Finanzas
-                    </button>
-                    <button className={seccion === 'morosidad' ? 'activo' : ''} onClick={() => setSeccion('morosidad')}>
-                        <BookAlert /> Morosidad
-                    </button>
-                    <button className={seccion === 'pagos'     ? 'activo' : ''} onClick={() => setSeccion('pagos')}>
-                        <CreditCard /> Pagos
-                        {pendientesCount > 0 && (
-                            <span className="sidebar-badge">{pendientesCount}</span>
-                        )}
-                    </button>
-                    <button className={seccion === 'reportes'  ? 'activo' : ''} onClick={() => setSeccion('reportes')}>
-                        <FileChartPie /> Reportes
-                    </button>
-                </nav>
+                <button className={seccion === 'socios'    ? 'activo' : ''} onClick={() => setSeccion('socios')}>
+                    <Users /> Gestión de Socios
+                </button>
+                <button className={seccion === 'finanzas'  ? 'activo' : ''} onClick={() => setSeccion('finanzas')}>
+                    <Landmark /> Finanzas
+                </button>
+                <button className={seccion === 'morosidad' ? 'activo' : ''} onClick={() => setSeccion('morosidad')}>
+                    <BookAlert /> Morosidad
+                </button>
+                <button className={seccion === 'pagos'     ? 'activo' : ''} onClick={() => setSeccion('pagos')}>
+                    <CreditCard /> Pagos
+                    {pendientesCount > 0 && (
+                        <span className="sidebar-badge">{pendientesCount}</span>
+                    )}
+                </button>
+                <button className={seccion === 'reportes'  ? 'activo' : ''} onClick={() => setSeccion('reportes')}>
+                    <FileChartPie /> Reportes
+                </button>
+            </nav>
             <div className="sidebar-footer">
-                    <div className="theme-toggle-row" onClick={toggleTema}>
-                        <span className="theme-toggle-label">
-                            {tema === 'dark' ? (
-                                <><Moon size={18} style={{ marginRight: '6px' }} /> Modo noche</>
-                            ) : (
-                                <><Sun size={18} style={{ marginRight: '6px' }} /> Modo día</>
-                            )}
-                        </span>
-                        <div className="toggle-switch">
-                            <div className="toggle-knob" />
-                        </div>
+                <div className="theme-toggle-row" onClick={toggleTema}>
+                    <span className="theme-toggle-label">
+                        {tema === 'dark' ? (
+                            <><Moon size={18} style={{ marginRight: '6px' }} /> Modo noche</>
+                        ) : (
+                            <><Sun size={18} style={{ marginRight: '6px' }} /> Modo día</>
+                        )}
+                    </span>
+                    <div className="toggle-switch">
+                        <div className="toggle-knob" />
                     </div>
+                </div>
                 <button className="btn-cerrar-admin" onClick={handleLogout}>
-                        <DoorClosed /> Cerrar Sesión
-                    </button>
+                    <DoorClosed /> Cerrar Sesión
+                </button>
             </div>
         </aside>
 
         <main className="admin-main">
 
-                {/* ── SOCIOS ── */}
-                {seccion === 'socios' && (
-                    <div>
-                        <div className="admin-header">
-                            <h2>Gestión de Socios</h2>
-                            <button className="btn-nuevo" onClick={() => { setMostrarFormNuevo(true); setSocioEditando(null) }}>
-                                + Nuevo Socio
-                            </button>
-                        </div>
+            {/* ── SOCIOS ── */}
+            {seccion === 'socios' && (
+                <div>
+                    <div className="admin-header">
+                        <h2>Gestión de Socios</h2>
+                        <button className="btn-nuevo" onClick={() => { setMostrarFormNuevo(true); setSocioEditando(null) }}>
+                            + Nuevo Socio
+                        </button>
+                    </div>
                     {socioEditando && (
-                            <FormEditarSocio
-                                socio={socioEditando}
-                                onEditar={handleEditar}
-                                onCancelar={() => setSocioEditando(null)}
-                            />
-                        )}
+                        <FormEditarSocio
+                            socio={socioEditando}
+                            onEditar={handleEditar}
+                            onCancelar={() => setSocioEditando(null)}
+                        />
+                    )}
                     <div className="admin-buscador">
-                            <input
-                                type="text"
-                                placeholder="Buscar por nombre, DNI o N° socio..."
-                                value={busqueda}
-                                onChange={(e) => setBusqueda(e.target.value)}
-                            />
-                        </div>
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre, DNI o N° socio..."
+                            value={busqueda}
+                            onChange={(e) => setBusqueda(e.target.value)}
+                        />
+                    </div>
                     {cargando ? (
-                            <SkeletonTabla columnas={6} filas={6} />
-                        ) : sociosOrdenados.length > 0 ? (
-                            <table className="tabla tabla-sortable">
-                                <thead>
-                                    <tr>
-                                        <th className="th-sortable" onClick={() => toggleOrdenSocios('nro_socio')}>
-                                            N° Socio <IconoOrdenSocios columna="nro_socio" />
-                                        </th>
-                                        <th className="th-sortable" onClick={() => toggleOrdenSocios('nombre')}>
-                                            Nombre <IconoOrdenSocios columna="nombre" />
-                                        </th>
-                                        <th>DNI</th>
-                                        <th>Correo</th>
-                                        <th className="th-sortable" onClick={() => toggleOrdenSocios('estado')}>
-                                            Estado <IconoOrdenSocios columna="estado" />
-                                        </th>
-                                        <th>Acciones</th>
+                        <SkeletonTabla columnas={6} filas={6} />
+                    ) : sociosOrdenados.length > 0 ? (
+                        <table className="tabla tabla-sortable">
+                            <thead>
+                                <tr>
+                                    <th className="th-sortable" onClick={() => toggleOrdenSocios('nro_socio')}>
+                                        N° Socio <IconoOrdenSocios columna="nro_socio" />
+                                    </th>
+                                    <th className="th-sortable" onClick={() => toggleOrdenSocios('nombre')}>
+                                        Nombre <IconoOrdenSocios columna="nombre" />
+                                    </th>
+                                    <th>DNI</th>
+                                    <th>Correo</th>
+                                    <th className="th-sortable" onClick={() => toggleOrdenSocios('estado')}>
+                                        Estado <IconoOrdenSocios columna="estado" />
+                                    </th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {sociosOrdenados.map((s) => (
+                                    <tr key={s.id}>
+                                        <td data-label="N° Socio">{s.nro_socio}</td>
+                                        <td data-label="Nombre">{s.nombre} {s.apellido}</td>
+                                        <td data-label="DNI">{s.dni}</td>
+                                        <td data-label="Correo">{s.correo}</td>
+                                        <td data-label="Estado">
+                                            <span className={`badge-estado ${s.estado === 'Activo' ? 'activo' : 'suspendido'}`}>
+                                                {s.estado}
+                                            </span>
+                                        </td>
+                                        <td data-label="Acciones">
+                                            <button className="btn-editar"   onClick={() => setSocioEditando(s)}><SquarePen /></button>
+                                            <button className="btn-eliminar" onClick={() => handleEliminar(s.id, `${s.nombre} ${s.apellido}`)}><Trash /></button>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {sociosOrdenados.map((s) => (
-                                        <tr key={s.id}>
-                                            <td>{s.nro_socio}</td>
-                                            <td>{s.nombre} {s.apellido}</td>
-                                            <td>{s.dni}</td>
-                                            <td>{s.correo}</td>
-                                            <td>
-                                                <span className={`badge-estado ${s.estado === 'Activo' ? 'activo' : 'suspendido'}`}>
-                                                    {s.estado}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <button className="btn-editar"   onClick={() => setSocioEditando(s)}><SquarePen /></button>
-                                                <button className="btn-eliminar" onClick={() => handleEliminar(s.id, `${s.nombre} ${s.apellido}`)}><Trash /></button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <div className="sin-datos">
-                                <Users size={40} className="sin-datos-icono" />
-                                <p>No hay socios registrados.</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* ── FINANZAS ── */}
-                {seccion === 'finanzas' && (
-                    <div>
-                        <h2>Resumen Financiero</h2>
-                        {cargando ? (
-                            <><SkeletonCards cantidad={4} /><SkeletonTabla columnas={5} filas={5} /></>
-                        ) : (
-                            <>
-                                {finanzas && (
-                                    <div className="admin-cards">
-                                        <div className="admin-card azul"><p>Ingresos del mes</p><h3>S/ {Number(finanzas.ingresosMes).toFixed(2)}</h3></div>
-                                        <div className="admin-card verde"><p>Pagos confirmados</p><h3>{finanzas.pagosConfirmados}</h3></div>
-                                        <div className="admin-card naranja"><p>Pagos pendientes</p><h3>{finanzas.pagosPendientes}</h3></div>
-                                        <div className="admin-card rojo"><p>Total deuda</p><h3>S/ {Number(finanzas.totalDeuda).toFixed(2)}</h3></div>
-                                    </div>
-                                )}
-                                <h3 className="subtitulo-seccion">Movimientos recientes</h3>
-                                {pagos.length > 0 ? (
-                                    <table className="tabla">
-                                        <thead>
-                                            <tr><th>Fecha</th><th>Socio</th><th>Método</th><th>Monto</th><th>Estado</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            {pagos.map((p, i) => (
-                                                <tr key={i}>
-                                                    <td>{new Date(p.fecha).toLocaleDateString('es-PE')}</td>
-                                                    <td>{p.nombre} {p.apellido}</td>
-                                                    <td>{p.metodo}</td>
-                                                    <td>S/ {Number(p.monto).toFixed(2)}</td>
-                                                    <td>
-                                                        <span className={`badge-estado-pago ${p.estado === 'Confirmado' ? 'confirmado' : 'pendiente'}`}>
-                                                            {p.estado}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                ) : (
-                                    <div className="sin-datos">
-                                        <Landmark size={40} className="sin-datos-icono" />
-                                        <p>No hay movimientos registrados.</p>
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </div>
-                )}
-
-                {/* ── MOROSIDAD ── */}
-                {seccion === 'morosidad' && (
-                    <div>
-                        <h2>Control de Morosidad</h2>
-                        {cargando ? (
-                            <><SkeletonCards cantidad={3} /><SkeletonTabla columnas={5} filas={5} /></>
-                        ) : (
-                            <>
-                                <div className="admin-cards">
-                                    <div className="admin-card naranja"><p>Socios con deuda</p><h3>{morosos.length}</h3></div>
-                                    <div className="admin-card rojo">
-                                        <p>Deuda mayor 60 días</p>
-                                        <h3>{morosos.filter(m => Math.floor((new Date() - new Date(m.fecha_deuda_mas_antigua)) / 86400000) > 60).length}</h3>
-                                    </div>
-                                    <div className="admin-card gris"><p>Suspendidos</p><h3>{morosos.filter(m => m.estado === 'Suspendido').length}</h3></div>
-                                </div>
-                                {morosos.length > 0 ? (
-                                    <table className="tabla">
-                                        <thead>
-                                            <tr><th>N° Socio</th><th>Nombre</th><th>Deuda total</th><th>Días de mora</th><th>Estado</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            {morosos.map((m, i) => {
-                                                const dias = Math.floor((new Date() - new Date(m.fecha_deuda_mas_antigua)) / 86400000)
-                                                return (
-                                                    <tr key={i}>
-                                                        <td>{m.nro_socio}</td>
-                                                        <td>{m.nombre} {m.apellido}</td>
-                                                        <td>S/ {Number(m.deuda_total).toFixed(2)}</td>
-                                                        <td><span className={dias > 60 ? 'texto-rojo' : 'texto-naranja'}>{dias} días</span></td>
-                                                        <td><span className={`badge-estado ${m.estado === 'Activo' ? 'activo' : 'suspendido'}`}>{m.estado}</span></td>
-                                                    </tr>
-                                                )
-                                            })}
-                                        </tbody>
-                                    </table>
-                                ) : (
-                                    <div className="sin-datos">
-                                        <BookAlert size={40} className="sin-datos-icono" />
-                                        <p>No hay socios morosos.</p>
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </div>
-                )}
-
-                {/* ── PAGOS ── */}
-                {seccion === 'pagos' && (
-                    <div>
-                        <h2>Solicitudes de Pago</h2>
-                        {cargando ? (
-                            <SkeletonTabla columnas={11} filas={5} />
-                        ) : solicitudes.length > 0 ? (
-                            <table className="tabla">
-                                <thead>
-                                    <tr>
-                                        <th>Socio</th><th>Casa</th><th>Servicio</th><th>Monto</th>
-                                        <th>Fecha transferencia</th><th>Hora</th><th>N° operación</th>
-                                        <th>Subido</th><th>Comprobante</th><th>Estado</th><th>Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {solicitudes.map((s, i) => (
-                                        <tr key={i}>
-                                            <td>{s.nombre} {s.apellido}</td>
-                                            <td>Casa {s.nro_casa}</td>
-                                            <td>{s.servicio}</td>
-                                            <td>S/ {Number(s.monto).toFixed(2)}</td>
-                                            <td>{s.fecha_operacion ? new Date(s.fecha_operacion).toLocaleDateString('es-PE') : '—'}</td>
-                                            <td>{s.hora_operacion || '—'}</td>
-                                            <td>{s.nro_operacion || '—'}</td>
-                                            <td>{s.fecha_subida ? new Date(s.fecha_subida).toLocaleString('es-PE') : '—'}</td>
-                                            <td>
-                                                {s.comprobante ? (
-                                                    <a href={`${API_BASE}/uploads/${s.comprobante}`} target="_blank" rel="noreferrer" className="btn-ver-comprobante">
-                                                        <View /> Ver
-                                                    </a>
-                                                ) : '—'}
-                                            </td>
-                                            <td>
-                                                <span className={`badge-estado-pago ${s.estado === 'Confirmado' ? 'confirmado' : s.estado === 'Rechazado' ? 'rechazado' : 'pendiente'}`}>
-                                                    {s.estado}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                {s.estado === 'Pendiente' && (
-                                                    <div className="acciones-pago">
-                                                        <button className="btn-confirmar" onClick={() => handleConfirmarPago(s.id)}>✅</button>
-                                                        <button className="btn-rechazar"  onClick={() => handleRechazarPago(s.id)}>❌</button>
-                                                    </div>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <div className="sin-datos">
-                                <CreditCard size={40} className="sin-datos-icono" />
-                                <p>No hay solicitudes de pago.</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* ── REPORTES ── */}
-                {seccion === 'reportes' && (
-                    <div>
-                        <h2>Generar Reportes</h2>
-                        <div className="reportes-grid">
-                            <div className="reporte-card">
-                                <span><FileText size={50} /></span>
-                                <h4>Reporte PDF</h4>
-                                <p>Estado de cuentas general</p>
-                                <button className="btn-reporte" onClick={() => toast.info('PDF próximamente')}>Generar PDF</button>
-                            </div>
-                            <div className="reporte-card">
-                                <span><Sheet size={50} /></span>
-                                <h4>Exportar Excel</h4>
-                                <p>Lista completa de socios y pagos</p>
-                                <button className="btn-reporte" onClick={() => toast.info('Excel próximamente')}>Exportar Excel</button>
-                            </div>
-                            <div className="reporte-card">
-                                <span><ChartNoAxesCombined size={50} /></span>
-                                <h4>Gráficos de consumo</h4>
-                                <p>Consumos por servicio y mes</p>
-                                <button className="btn-reporte" onClick={() => toast.info('Gráficos próximamente')}>Ver Gráficos</button>
-                            </div>
-                            <div className="reporte-card">
-                                <span><Network size={50} /></span>
-                                <h4>Ranking de socios</h4>
-                                <p>Socios con mayor consumo</p>
-                                <button className="btn-reporte" onClick={() => toast.info('Ranking próximamente')}>Ver Ranking</button>
-                            </div>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="sin-datos">
+                            <Users size={40} className="sin-datos-icono" />
+                            <p>No hay socios registrados.</p>
                         </div>
-                    </div>
-                )}
-
-            </main>
-
-    {mostrarFormNuevo && (
-                <FormNuevoSocio
-                    onCrear={handleCrear}
-                    onCancelar={() => setMostrarFormNuevo(false)}
-                />
+                    )}
+                </div>
             )}
 
+            {/* ── FINANZAS ── */}
+            {seccion === 'finanzas' && (
+                <div>
+                    <h2>Resumen Financiero</h2>
+                    {cargando ? (
+                        <><SkeletonCards cantidad={4} /><SkeletonTabla columnas={5} filas={5} /></>
+                    ) : (
+                        <>
+                            {finanzas && (
+                                <div className="admin-cards">
+                                    <div className="admin-card azul"><p>Ingresos del mes</p><h3>S/ {Number(finanzas.ingresosMes).toFixed(2)}</h3></div>
+                                    <div className="admin-card verde"><p>Pagos confirmados</p><h3>{finanzas.pagosConfirmados}</h3></div>
+                                    <div className="admin-card naranja"><p>Pagos pendientes</p><h3>{finanzas.pagosPendientes}</h3></div>
+                                    <div className="admin-card rojo"><p>Total deuda</p><h3>S/ {Number(finanzas.totalDeuda).toFixed(2)}</h3></div>
+                                </div>
+                            )}
+                            <h3 className="subtitulo-seccion">Movimientos recientes</h3>
+                            {pagos.length > 0 ? (
+                                <table className="tabla">
+                                    <thead>
+                                        <tr><th>Fecha</th><th>Socio</th><th>Método</th><th>Monto</th><th>Estado</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {pagos.map((p, i) => (
+                                            <tr key={i}>
+                                                <td data-label="Fecha">{new Date(p.fecha).toLocaleDateString('es-PE')}</td>
+                                                <td data-label="Socio">{p.nombre} {p.apellido}</td>
+                                                <td data-label="Método">{p.metodo}</td>
+                                                <td data-label="Monto">S/ {Number(p.monto).toFixed(2)}</td>
+                                                <td data-label="Estado">
+                                                    <span className={`badge-estado-pago ${p.estado === 'Confirmado' ? 'confirmado' : 'pendiente'}`}>
+                                                        {p.estado}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="sin-datos">
+                                    <Landmark size={40} className="sin-datos-icono" />
+                                    <p>No hay movimientos registrados.</p>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            )}
+
+            {/* ── MOROSIDAD ── */}
+            {seccion === 'morosidad' && (
+                <div>
+                    <h2>Control de Morosidad</h2>
+                    {cargando ? (
+                        <><SkeletonCards cantidad={3} /><SkeletonTabla columnas={5} filas={5} /></>
+                    ) : (
+                        <>
+                            <div className="admin-cards">
+                                <div className="admin-card naranja"><p>Socios con deuda</p><h3>{morosos.length}</h3></div>
+                                <div className="admin-card rojo">
+                                    <p>Deuda mayor 60 días</p>
+                                    <h3>{morosos.filter(m => Math.floor((new Date() - new Date(m.fecha_deuda_mas_antigua)) / 86400000) > 60).length}</h3>
+                                </div>
+                                <div className="admin-card gris"><p>Suspendidos</p><h3>{morosos.filter(m => m.estado === 'Suspendido').length}</h3></div>
+                            </div>
+                            {morosos.length > 0 ? (
+                                <table className="tabla">
+                                    <thead>
+                                        <tr><th>N° Socio</th><th>Nombre</th><th>Deuda total</th><th>Días de mora</th><th>Estado</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {morosos.map((m, i) => {
+                                            const dias = Math.floor((new Date() - new Date(m.fecha_deuda_mas_antigua)) / 86400000)
+                                            return (
+                                                <tr key={i}>
+                                                    <td data-label="N° Socio">{m.nro_socio}</td>
+                                                    <td data-label="Nombre">{m.nombre} {m.apellido}</td>
+                                                    <td data-label="Deuda total">S/ {Number(m.deuda_total).toFixed(2)}</td>
+                                                    <td data-label="Días de mora"><span className={dias > 60 ? 'texto-rojo' : 'texto-naranja'}>{dias} días</span></td>
+                                                    <td data-label="Estado"><span className={`badge-estado ${m.estado === 'Activo' ? 'activo' : 'suspendido'}`}>{m.estado}</span></td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="sin-datos">
+                                    <BookAlert size={40} className="sin-datos-icono" />
+                                    <p>No hay socios morosos.</p>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            )}
+
+            {/* ── PAGOS ── */}
+            {seccion === 'pagos' && (
+                <div>
+                    <h2>Solicitudes de Pago</h2>
+                    {cargando ? (
+                        <SkeletonTabla columnas={11} filas={5} />
+                    ) : solicitudes.length > 0 ? (
+                        <table className="tabla">
+                            <thead>
+                                <tr>
+                                    <th>Socio</th><th>Casa</th><th>Servicio</th><th>Monto</th>
+                                    <th>Fecha</th><th>Hora</th><th>N° operación</th>
+                                    <th>Subido</th><th>Comprobante</th><th>Estado</th><th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {solicitudes.map((s, i) => (
+                                    <tr key={i}>
+                                        <td data-label="Socio">{s.nombre} {s.apellido}</td>
+                                        <td data-label="Casa">Casa {s.nro_casa}</td>
+                                        <td data-label="Servicio">{s.servicio}</td>
+                                        <td data-label="Monto">S/ {Number(s.monto).toFixed(2)}</td>
+                                        <td data-label="Fecha">{s.fecha_operacion ? new Date(s.fecha_operacion).toLocaleDateString('es-PE') : '—'}</td>
+                                        <td data-label="Hora">{s.hora_operacion || '—'}</td>
+                                        <td data-label="N° operación">{s.nro_operacion || '—'}</td>
+                                        <td data-label="Subido">{s.fecha_subida ? new Date(s.fecha_subida).toLocaleString('es-PE') : '—'}</td>
+                                        <td data-label="Comprobante">
+                                            {s.comprobante ? (
+                                                <a href={`${API_BASE}/uploads/${s.comprobante}`} target="_blank" rel="noreferrer" className="btn-ver-comprobante">
+                                                    <View /> Ver
+                                                </a>
+                                            ) : '—'}
+                                        </td>
+                                        <td data-label="Estado">
+                                            <span className={`badge-estado-pago ${s.estado === 'Confirmado' ? 'confirmado' : s.estado === 'Rechazado' ? 'rechazado' : 'pendiente'}`}>
+                                                {s.estado}
+                                            </span>
+                                        </td>
+                                        <td data-label="Acción">
+                                            {s.estado === 'Pendiente' && (
+                                                <div className="acciones-pago">
+                                                    <button className="btn-confirmar" onClick={() => handleConfirmarPago(s.id)}>✅</button>
+                                                    <button className="btn-rechazar"  onClick={() => handleRechazarPago(s.id)}>❌</button>
+                                                </div>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="sin-datos">
+                            <CreditCard size={40} className="sin-datos-icono" />
+                            <p>No hay solicitudes de pago.</p>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ── REPORTES ── */}
+            {seccion === 'reportes' && (
+                <div>
+                    <h2>Generar Reportes</h2>
+                    <div className="reportes-grid">
+                        <div className="reporte-card">
+                            <span><FileText size={50} /></span>
+                            <h4>Reporte PDF</h4>
+                            <p>Estado de cuentas general</p>
+                            <button className="btn-reporte" onClick={() => toast.info('PDF próximamente')}>Generar PDF</button>
+                        </div>
+                        <div className="reporte-card">
+                            <span><Sheet size={50} /></span>
+                            <h4>Exportar Excel</h4>
+                            <p>Lista completa de socios y pagos</p>
+                            <button className="btn-reporte" onClick={() => toast.info('Excel próximamente')}>Exportar Excel</button>
+                        </div>
+                        <div className="reporte-card">
+                            <span><ChartNoAxesCombined size={50} /></span>
+                            <h4>Gráficos de consumo</h4>
+                            <p>Consumos por servicio y mes</p>
+                            <button className="btn-reporte" onClick={() => toast.info('Gráficos próximamente')}>Ver Gráficos</button>
+                        </div>
+                        <div className="reporte-card">
+                            <span><Network size={50} /></span>
+                            <h4>Ranking de socios</h4>
+                            <p>Socios con mayor consumo</p>
+                            <button className="btn-reporte" onClick={() => toast.info('Ranking próximamente')}>Ver Ranking</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+        </main>
+
+        {mostrarFormNuevo && (
+            <FormNuevoSocio
+                onCrear={handleCrear}
+                onCancelar={() => setMostrarFormNuevo(false)}
+            />
+        )}
+
         <ToastContainer toasts={toasts} />
-            {ModalConfirm}
+        {ModalConfirm}
     </div>
     )
 }
