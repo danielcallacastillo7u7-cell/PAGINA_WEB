@@ -12,10 +12,7 @@ import {
     FileChartPie, DoorClosed, SquarePen, Trash, FileText,
     ChartNoAxesCombined, Network, Sheet,
     Eye, EyeOff, CheckCircle2, XCircle, AlertCircle, Home,
-    ChevronUp, ChevronDown, ChevronsUpDown,Moon,Sun,View
-} from 'lucide-react'
-
-// ─── Constantes ───────────────────────────────────────────────
+    ChevronUp, ChevronDown, ChevronsUpDown, Moon, Sun, View} from 'lucide-react'
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 const DOMINIOS_EMAIL = [
@@ -45,13 +42,9 @@ const validarFormNuevo = (form) => {
     if (!form.contrasena) errores.contrasena = 'La contraseña es obligatoria'
     else if (form.contrasena.length < 6) errores.contrasena = 'Mínimo 6 caracteres'
 
-    return errores
-}
-
-// ─── Hook: Toast ──────────────────────────────────────────────
+    return errores}
 function useToast() {
-    const [toasts, setToasts] = useState([])
-
+const [toasts, setToasts] = useState([])
     const addToast = useCallback((message, type = 'info') => {
         const id = Date.now() + Math.random()
         setToasts(prev => [...prev, { id, message, type }])
@@ -59,18 +52,13 @@ function useToast() {
             setToasts(prev => prev.filter(t => t.id !== id))
         }, 3800)
     }, [])
-
-    const toast = {
+const toast = {
         success: (msg) => addToast(msg, 'success'),
         error:   (msg) => addToast(msg, 'error'),
         info:    (msg) => addToast(msg, 'info'),
         warning: (msg) => addToast(msg, 'warning'),
     }
-
-    return { toasts, toast }
-}
-
-// ─── Componente: ToastContainer ───────────────────────────────
+    return { toasts, toast }}
 function ToastContainer({ toasts }) {
     if (!toasts.length) return null
     return (
@@ -88,23 +76,18 @@ function ToastContainer({ toasts }) {
     )
 }
 
-// ─── Componente: ModalConfirmacion ────────────────────────────
 function ModalConfirmacion({ config, onConfirmar, onCancelar }) {
     if (!config) return null
     return (
         <div className="modal-confirm-overlay" onClick={onCancelar}>
             <div className="modal-confirm" onClick={e => e.stopPropagation()}>
                 <div className={`modal-confirm-icono modal-confirm-icono--${config.tipo || 'danger'}`}>
-                    {config.tipo === 'warning'
-                        ? <AlertCircle size={28} />
-                        : <Trash size={28} />}
+                    {config.tipo === 'warning' ? <AlertCircle size={28} /> : <Trash size={28} />}
                 </div>
                 <h3 className="modal-confirm-titulo">{config.titulo || '¿Estás seguro?'}</h3>
                 <p className="modal-confirm-mensaje">{config.mensaje}</p>
                 <div className="modal-confirm-botones">
-                    <button className="modal-confirm-btn-cancelar" onClick={onCancelar}>
-                        Cancelar
-                    </button>
+                    <button className="modal-confirm-btn-cancelar" onClick={onCancelar}>Cancelar</button>
                     <button
                         className={`modal-confirm-btn-ok modal-confirm-btn-ok--${config.tipo || 'danger'}`}
                         onClick={onConfirmar}
@@ -114,24 +97,18 @@ function ModalConfirmacion({ config, onConfirmar, onCancelar }) {
                 </div>
             </div>
         </div>
-    )
-}
-
-// ─── Hook: useConfirm ─────────────────────────────────────────
+    )}
 function useConfirm() {
     const [config, setConfig] = useState(null)
-    const resolverRef         = useRef(null)
-
+    const resolverRef = useRef(null)
     const confirmar = useCallback((opciones) => {
         return new Promise((resolve) => {
             resolverRef.current = resolve
             setConfig(opciones)
         })
     }, [])
-
-    const handleConfirmar = () => { resolverRef.current(true);  setConfig(null) }
-    const handleCancelar  = () => { resolverRef.current(false); setConfig(null) }
-
+const handleConfirmar = () => { resolverRef.current(true);  setConfig(null) }
+const handleCancelar  = () => { resolverRef.current(false); setConfig(null) }
     const ModalConfirm = (
         <ModalConfirmacion
             config={config}
@@ -139,11 +116,7 @@ function useConfirm() {
             onCancelar={handleCancelar}
         />
     )
-
-    return { confirmar, ModalConfirm }
-}
-
-// ─── Componente: SkeletonTabla ─────────────────────────────────
+    return { confirmar, ModalConfirm }}
 function SkeletonTabla({ columnas = 5, filas = 6 }) {
     return (
         <table className="tabla">
@@ -160,10 +133,7 @@ function SkeletonTabla({ columnas = 5, filas = 6 }) {
                 ))}
             </tbody>
         </table>
-    )
-}
-
-// ─── Componente: SkeletonCards ─────────────────────────────────
+    )}
 function SkeletonCards({ cantidad = 4 }) {
     return (
         <div className="admin-cards">
@@ -174,10 +144,7 @@ function SkeletonCards({ cantidad = 4 }) {
                 </div>
             ))}
         </div>
-    )
-}
-
-// ─── Componente: CampoFeedback ────────────────────────────────
+    )}
 function CampoFeedback({ error, touched, valor }) {
     if (!touched) return null
     if (error) return (
@@ -190,10 +157,7 @@ function CampoFeedback({ error, touched, valor }) {
             <CheckCircle2 size={13} /> Correcto
         </span>
     )
-    return null
-}
-
-// ─── Componente: BarraFortaleza ───────────────────────────────
+    return null}
 function BarraFortaleza({ password }) {
     if (!password) return null
     const len = password.length
@@ -212,10 +176,7 @@ function BarraFortaleza({ password }) {
                 {etiquetas[nivel]}
             </span>
         </div>
-    )
-}
-
-// ─── Componente: FormNuevoSocio ───────────────────────────────
+    )}
 function FormNuevoSocio({ onCrear, onCancelar }) {
     const [form, setForm] = useState({
         nombre: '', apellido: '', dni: '', correo: '',
@@ -268,8 +229,7 @@ function FormNuevoSocio({ onCrear, onCancelar }) {
         setForm(f => ({ ...f, [name]: value }))
     }
 
-    const handleBlur = (e) => setTocados(t => ({ ...t, [e.target.name]: true }))
-
+    const handleBlur  = (e) => setTocados(t => ({ ...t, [e.target.name]: true }))
     const handleSugerencia = (s) => {
         setForm(f => ({ ...f, correo: s }))
         setMostrarSugerencias(false)
@@ -292,15 +252,13 @@ function FormNuevoSocio({ onCrear, onCancelar }) {
             <div className="fns-modal">
                 <h3 className="fns-titulo">➕ Nuevo Socio</h3>
                 <p className="fns-subtitulo">Completá todos los campos obligatorios para registrar al socio.</p>
-
-                {enviado && !formularioValido && (
+            {enviado && !formularioValido && (
                     <div className="fns-alerta-global">
                         <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 1 }} />
                         <span>Hay campos con errores o incompletos. Revisá los campos marcados antes de continuar.</span>
                     </div>
                 )}
-
-                <form onSubmit={handleSubmit} noValidate>
+            <form onSubmit={handleSubmit} noValidate>
                     <div className="fns-fila">
                         <div className="fns-grupo">
                             <label className="fns-label">Nombre</label>
@@ -323,8 +281,7 @@ function FormNuevoSocio({ onCrear, onCancelar }) {
                             <CampoFeedback error={errores.apellido} touched={tocados.apellido} valor={form.apellido} />
                         </div>
                     </div>
-
-                    <div className="fns-fila">
+                <div className="fns-fila">
                         <div className="fns-grupo">
                             <label className="fns-label">DNI</label>
                             <input
@@ -340,8 +297,7 @@ function FormNuevoSocio({ onCrear, onCancelar }) {
                             <input className="fns-input fns-input-disabled" type="text" value="Se asignará automáticamente" disabled />
                         </div>
                     </div>
-
-                    <div className="fns-grupo fns-grupo-full" style={{ position: 'relative' }}>
+                <div className="fns-grupo fns-grupo-full" style={{ position: 'relative' }}>
                         <label className="fns-label">Correo electrónico</label>
                         <input
                             ref={correoRef}
@@ -364,8 +320,7 @@ function FormNuevoSocio({ onCrear, onCancelar }) {
                             </div>
                         )}
                     </div>
-
-                    <div className="fns-grupo fns-grupo-full">
+                <div className="fns-grupo fns-grupo-full">
                         <label className="fns-label">Contraseña</label>
                         <div className="fns-input-wrap">
                             <input
@@ -376,25 +331,15 @@ function FormNuevoSocio({ onCrear, onCancelar }) {
                                 placeholder="Mínimo 6 caracteres"
                                 style={{ paddingRight: 44 }}
                             />
-                            <button
-                                type="button" className="fns-ojo"
-                                onClick={() => setVerContrasena(v => !v)}
-                                tabIndex={-1}
-                                title={verContrasena ? 'Ocultar' : 'Ver contraseña'}
-                            >
+                            <button type="button" className="fns-ojo" onClick={() => setVerContrasena(v => !v)} tabIndex={-1}>
                                 {verContrasena ? <EyeOff size={17} /> : <Eye size={17} />}
                             </button>
                         </div>
                         <CampoFeedback error={errores.contrasena} touched={tocados.contrasena} valor={form.contrasena} />
                         <BarraFortaleza password={form.contrasena} />
                     </div>
-
-                    <hr className="fns-divider" />
-
-                    <div className="fns-opcional-titulo">
-                        <Home size={13} /> Datos opcionales
-                    </div>
-
+                <hr className="fns-divider" />
+                <div className="fns-opcional-titulo"><Home size={13} /> Datos opcionales</div>
                     <div className="fns-grupo fns-grupo-full">
                         <label className="fns-label">
                             Nombre de familia / Casa
@@ -407,33 +352,21 @@ function FormNuevoSocio({ onCrear, onCancelar }) {
                             placeholder="Ej: Familia García, Casa Los Pinos..."
                         />
                     </div>
-
-                    <div className="fns-botones">
+                <div className="fns-botones">
                         <button type="submit" className="fns-btn-crear">Crear Socio</button>
                         <button type="button" className="fns-btn-cancelar" onClick={onCancelar}>Cancelar</button>
                     </div>
                 </form>
             </div>
         </div>
-    )
-}
-
-// ─── Componente: FormEditarSocio ──────────────────────────────
+    )}
 function FormEditarSocio({ socio, onEditar, onCancelar }) {
     const [form, setForm] = useState({
-        nombre:   socio.nombre,
-        apellido: socio.apellido,
-        dni:      socio.dni,
-        correo:   socio.correo,
-        estado:   socio.estado
+        nombre: socio.nombre, apellido: socio.apellido,
+        dni: socio.dni, correo: socio.correo, estado: socio.estado
     })
-
-    const handleChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        onEditar(form)
-    }
+const handleChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+    const handleSubmit = (e) => { e.preventDefault(); onEditar(form) }
 
     return (
         <form className="admin-form" onSubmit={handleSubmit}>
@@ -478,22 +411,17 @@ function FormEditarSocio({ socio, onEditar, onCancelar }) {
                 <button type="button" className="btn-cancelar" onClick={onCancelar}>Cancelar</button>
             </div>
         </form>
-    )
-}
-
-// ─── Hook: useOrdenTabla ──────────────────────────────────────
+    )}
 function useOrdenTabla(datos, columnaInicial = null) {
     const [orden, setOrden] = useState({ columna: columnaInicial, dir: 'asc' })
-
-    const toggleOrden = (columna) => {
+const toggleOrden = (columna) => {
         setOrden(prev =>
             prev.columna === columna
                 ? { columna, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
                 : { columna, dir: 'asc' }
         )
     }
-
-    const datoOrdenados = [...datos].sort((a, b) => {
+const datoOrdenados = [...datos].sort((a, b) => {
         if (!orden.columna) return 0
         const valA = a[orden.columna] ?? ''
         const valB = b[orden.columna] ?? ''
@@ -502,15 +430,13 @@ function useOrdenTabla(datos, columnaInicial = null) {
             : String(valA).localeCompare(String(valB), 'es')
         return orden.dir === 'asc' ? cmp : -cmp
     })
-
-    const IconoOrden = ({ columna }) => {
+const IconoOrden = ({ columna }) => {
         if (orden.columna !== columna) return <ChevronsUpDown size={13} className="sort-icon sort-icon--neutral" />
         return orden.dir === 'asc'
             ? <ChevronUp size={13} className="sort-icon sort-icon--active" />
             : <ChevronDown size={13} className="sort-icon sort-icon--active" />
     }
-
-    return { datoOrdenados, orden, toggleOrden, IconoOrden }
+return { datoOrdenados, orden, toggleOrden, IconoOrden }
 }
 
 // ─── Componente principal ─────────────────────────────────────
@@ -526,7 +452,7 @@ function AdminPanel() {
     const [mostrarFormNuevo, setMostrarFormNuevo] = useState(false)
     const [socioEditando,    setSocioEditando]    = useState(null)
     const [pendientesCount,  setPendientesCount]  = useState(0)
-    const [tema,             setTema]             = useState('light')  // ← TOGGLE
+    const [tema,             setTema]             = useState('light')
 
     const { usuario, logout } = useAuth()
     const navigate = useNavigate()
@@ -545,17 +471,8 @@ function AdminPanel() {
     const { datoOrdenados: sociosOrdenados, toggleOrden: toggleOrdenSocios, IconoOrden: IconoOrdenSocios }
         = useOrdenTabla(sociosFiltrados, 'nro_socio')
 
-    useEffect(() => {
-    const cargarPendientes = async () => {
-        const data = await getSolicitudesPago(usuario.token)
-        if (!data.error) {
-        setPendientesCount(data.filter(s => s.estado === 'Pendiente').length)
-        }
-    }
-    cargarPendientes()
-    }, [usuario.token])  // ✅ agregar aquí
-
-    const cargarDatos = async () => {
+    // ✅ FIX: cargarDatos con useCallback para evitar recreación infinita
+    const cargarDatos = useCallback(async () => {
         setCargando(true)
         if (seccion === 'socios') {
             const data = await getSocios(usuario.token)
@@ -577,7 +494,24 @@ function AdminPanel() {
             }
         }
         setCargando(false)
-    }
+    }, [seccion, usuario.token])
+
+    // ✅ FIX: useEffect que llama cargarDatos cuando cambia la sección
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        cargarDatos()
+    }, [cargarDatos])
+
+    // ✅ FIX: useEffect separado para pendientes
+    useEffect(() => {
+        const cargarPendientes = async () => {
+            const data = await getSolicitudesPago(usuario.token)
+            if (!data.error) {
+                setPendientesCount(data.filter(s => s.estado === 'Pendiente').length)
+            }
+        }
+        cargarPendientes()
+    }, [usuario.token])
 
     const handleLogout = () => { logout(); navigate('/login') }
 
@@ -657,20 +591,14 @@ function AdminPanel() {
     }
 
     return (
-        <div className="admin" data-theme={tema}>  {/* ← data-theme aplicado aquí */}
-
-            {/* ══════════════════════════════════
-                SIDEBAR
-            ══════════════════════════════════ */}
-            <aside className="admin-sidebar">
-
-                <div className="admin-sidebar-header">
+        <div className="admin" data-theme={tema}>
+        <aside className="admin-sidebar">
+        <div className="admin-sidebar-header">
                     <ShieldCog className="icono-admin" />
                     <h3>Panel Admin</h3>
                     <p>Club Catarindo</p>
                 </div>
-
-                <nav className="admin-nav">
+            <nav className="admin-nav">
                     <button className={seccion === 'socios'    ? 'activo' : ''} onClick={() => setSeccion('socios')}>
                         <Users /> Gestión de Socios
                     </button>
@@ -690,42 +618,26 @@ function AdminPanel() {
                         <FileChartPie /> Reportes
                     </button>
                 </nav>
-
-                {/* Footer: toggle + cerrar sesión */}
-                <div className="sidebar-footer">
-
-                    {/* Toggle día / noche */}
+            <div className="sidebar-footer">
                     <div className="theme-toggle-row" onClick={toggleTema}>
                         <span className="theme-toggle-label">
-    {tema === 'dark' ? (
-        <>
-            <Moon size={18} style={{ marginRight: "6px" }} />
-            Modo noche
-        </>
-    ) : (
-        <>
-            <Sun size={18} style={{ marginRight: "6px" }} />
-            Modo día
-        </>
-    )}
-</span>
+                            {tema === 'dark' ? (
+                                <><Moon size={18} style={{ marginRight: '6px' }} /> Modo noche</>
+                            ) : (
+                                <><Sun size={18} style={{ marginRight: '6px' }} /> Modo día</>
+                            )}
+                        </span>
                         <div className="toggle-switch">
                             <div className="toggle-knob" />
                         </div>
                     </div>
-
-                    {/* Cerrar sesión */}
-                    <button className="btn-cerrar-admin" onClick={handleLogout}>
+                <button className="btn-cerrar-admin" onClick={handleLogout}>
                         <DoorClosed /> Cerrar Sesión
                     </button>
+            </div>
+        </aside>
 
-                </div>
-            </aside>
-
-            {/* ══════════════════════════════════
-                MAIN
-            ══════════════════════════════════ */}
-            <main className="admin-main">
+        <main className="admin-main">
 
                 {/* ── SOCIOS ── */}
                 {seccion === 'socios' && (
@@ -736,16 +648,14 @@ function AdminPanel() {
                                 + Nuevo Socio
                             </button>
                         </div>
-
-                        {socioEditando && (
+                    {socioEditando && (
                             <FormEditarSocio
                                 socio={socioEditando}
                                 onEditar={handleEditar}
                                 onCancelar={() => setSocioEditando(null)}
                             />
                         )}
-
-                        <div className="admin-buscador">
+                    <div className="admin-buscador">
                             <input
                                 type="text"
                                 placeholder="Buscar por nombre, DNI o N° socio..."
@@ -753,8 +663,7 @@ function AdminPanel() {
                                 onChange={(e) => setBusqueda(e.target.value)}
                             />
                         </div>
-
-                        {cargando ? (
+                    {cargando ? (
                             <SkeletonTabla columnas={6} filas={6} />
                         ) : sociosOrdenados.length > 0 ? (
                             <table className="tabla tabla-sortable">
@@ -808,10 +717,7 @@ function AdminPanel() {
                     <div>
                         <h2>Resumen Financiero</h2>
                         {cargando ? (
-                            <>
-                                <SkeletonCards cantidad={4} />
-                                <SkeletonTabla columnas={5} filas={5} />
-                            </>
+                            <><SkeletonCards cantidad={4} /><SkeletonTabla columnas={5} filas={5} /></>
                         ) : (
                             <>
                                 {finanzas && (
@@ -860,10 +766,7 @@ function AdminPanel() {
                     <div>
                         <h2>Control de Morosidad</h2>
                         {cargando ? (
-                            <>
-                                <SkeletonCards cantidad={3} />
-                                <SkeletonTabla columnas={5} filas={5} />
-                            </>
+                            <><SkeletonCards cantidad={3} /><SkeletonTabla columnas={5} filas={5} /></>
                         ) : (
                             <>
                                 <div className="admin-cards">
@@ -934,7 +837,7 @@ function AdminPanel() {
                                             <td>
                                                 {s.comprobante ? (
                                                     <a href={`${API_BASE}/uploads/${s.comprobante}`} target="_blank" rel="noreferrer" className="btn-ver-comprobante">
-                                                    <View /> Ver
+                                                        <View /> Ver
                                                     </a>
                                                 ) : '—'}
                                             </td>
@@ -999,19 +902,16 @@ function AdminPanel() {
 
             </main>
 
-            {/* Modal nuevo socio */}
-            {mostrarFormNuevo && (
+    {mostrarFormNuevo && (
                 <FormNuevoSocio
                     onCrear={handleCrear}
                     onCancelar={() => setMostrarFormNuevo(false)}
                 />
             )}
 
-            {/* Globales: toast + modal confirmación */}
-            <ToastContainer toasts={toasts} />
+        <ToastContainer toasts={toasts} />
             {ModalConfirm}
-
-        </div>
+    </div>
     )
 }
 
