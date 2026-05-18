@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { loginSocio } from '../services/authService'
+import { useAuth } from '../../context/AuthContext'
+import { loginSocio } from '../../services/authService'
 import { Eye, EyeOff } from 'lucide-react'
 import './Login.css'
 

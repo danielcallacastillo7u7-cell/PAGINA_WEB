@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { loginAdmin, verificarCodigo } from '../services/authService'
+import { useAuth } from '../../context/AuthContext'
+import { loginAdmin, verificarCodigo } from '../../services/authService'
 import { Eye, EyeOff, UserRoundKey } from 'lucide-react'
 import './AdminLogin.css'
 

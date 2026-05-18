@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 import {
     getSocios, crearSocio, editarSocio, eliminarSocio,
     getFinanzas, getMorosos, getSolicitudesPago,
     confirmarSolicitud, rechazarSolicitud
-} from '../services/adminService'
+} from '../../services/adminService'
 import './AdminPanel.css'
 import {
     ShieldCog, Users, Landmark, BookAlert, CreditCard,
@@ -545,17 +545,15 @@ function AdminPanel() {
     const { datoOrdenados: sociosOrdenados, toggleOrden: toggleOrdenSocios, IconoOrden: IconoOrdenSocios }
         = useOrdenTabla(sociosFiltrados, 'nro_socio')
 
-    useEffect(() => { cargarDatos() }, [seccion])
-
     useEffect(() => {
-        const cargarPendientes = async () => {
-            const data = await getSolicitudesPago(usuario.token)
-            if (!data.error) {
-                setPendientesCount(data.filter(s => s.estado === 'Pendiente').length)
-            }
+    const cargarPendientes = async () => {
+        const data = await getSolicitudesPago(usuario.token)
+        if (!data.error) {
+        setPendientesCount(data.filter(s => s.estado === 'Pendiente').length)
         }
-        cargarPendientes()
-    }, [])
+    }
+    cargarPendientes()
+    }, [usuario.token])  // ✅ agregar aquí
 
     const cargarDatos = async () => {
         setCargando(true)

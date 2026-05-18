@@ -65,12 +65,15 @@ const loginAdmin = async (req, res) => {
             [admin.id, codigo]
         );
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    family: 4,          // ← fuerza IPv4
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
         });
 
         await transporter.sendMail({
@@ -78,7 +81,7 @@ const loginAdmin = async (req, res) => {
             to: admin.correo,
             subject: 'Código de verificación - Club Catarindo',
             html: `<h2>Tu código de verificación es: <strong>${codigo}</strong></h2>
-                   <p>Este código expira en 10 minutos.</p>`
+        <p>Este código expira en 10 minutos.</p>`
         });
 
         res.json({ mensaje: 'Código enviado al correo', adminId: admin.id });

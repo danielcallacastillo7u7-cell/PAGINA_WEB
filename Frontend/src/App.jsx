@@ -1,57 +1,50 @@
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Inicio from './pages/Inicio';
-import Login from './pages/Login';
-import AdminLogin from './pages/AdminLogin';
-import AdminPanel from './pages/AdminPanel'; 
-import Dashboard from './pages/Dashboard/index';
-import RecuperarContrasena from './pages/RecuperarContrasena';
+
+// Componentes globales
+import Navbar from './components/Navbar';  // ← faltaba este
+
+// Páginas públicas
+import Inicio from './pages/public/Inicio';
+import Register from './pages/public/Register';
+import NotFound from './pages/public/NotFound';
+
+// Páginas de usuario
+import Login from './pages/user/Login';
+import RecuperarContrasena from './pages/user/RecuperarContrasena';
+import Dashboard from './pages/user/Dashboard';
+
+// Páginas de admin
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminPanel from './pages/admin/AdminPanel';
+
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-/**
- * 1. PROTECTED ROUTE
- * Solo deja pasar si hay un usuario logueado. 
- * Si 'adminOnly' es true, además verifica que el rol sea 'admin'.
- */
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { usuario, cargando } = useAuth();
-
   if (cargando) return <div className="loading">Cargando sesión...</div>;
-  
   if (!usuario) return <Navigate to="/login" replace />;
-
-  if (adminOnly && usuario.rol !== 'admin') {
-    return <Navigate to="/dashboard" replace />;
-  }
-
+  if (adminOnly && usuario.rol !== 'admin') return <Navigate to="/dashboard" replace />;
   return children;
 };
 
-/**
- * 2. PUBLIC ROUTE
- * Si el usuario ya está logueado, lo saca del Login y lo envía a su sitio.
- */
 const PublicRoute = ({ children }) => {
   const { usuario } = useAuth();
-
   if (usuario) {
-    return usuario.rol === 'admin' 
-      ? <Navigate to="/panel-admin" replace /> 
+    return usuario.rol === 'admin'
+      ? <Navigate to="/panel-admin" replace />
       : <Navigate to="/dashboard" replace />;
   }
-
   return children;
 };
 
 function AppContent() {
   const location = useLocation();
-  
-  // Lista de rutas donde ocultamos el Navbar (Dashboard, Paneles, Logins)
+
   const ocultarNavbar = [
-    '/login', 
-    '/dashboard', 
-    '/recuperar', 
-    '/admin-login', 
+    '/login',
+    '/dashboard',
+    '/recuperar',
+    '/admin-login',
     '/panel-admin'
   ].includes(location.pathname);
 
@@ -59,36 +52,23 @@ function AppContent() {
     <>
       {!ocultarNavbar && <Navbar />}
       <Routes>
-        {/* --- RUTAS INICIALES --- */}
+        {/* Públicas */}
         <Route path="/" element={<Inicio />} />
+        <Route path="/register" element={<Register />} />  {/* ← ruta que faltaba */}
 
-        {/* --- RUTAS PÚBLICAS (Se bloquean si ya iniciaste sesión) --- */}
+        {/* Usuario */}
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/admin-login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
         <Route path="/recuperar" element={<PublicRoute><RecuperarContrasena /></PublicRoute>} />
 
-        {/* --- RUTAS PRIVADAS PARA ADMINISTRADORES --- */}
-        <Route 
-          path="/panel-admin" 
-          element={
-            <ProtectedRoute adminOnly={true}>
-              <AdminPanel />
-            </ProtectedRoute>
-          } 
-        />
+        {/* Admin */}
+        <Route path="/panel-admin" element={<ProtectedRoute adminOnly={true}><AdminPanel /></ProtectedRoute>} />
 
-        {/* --- RUTAS PRIVADAS PARA SOCIOS --- */}
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* Redirección por si escriben cualquier otra cosa */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Socio */}
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />  {/* ← mejor usar NotFound que redirigir */}
       </Routes>
     </>
   );
