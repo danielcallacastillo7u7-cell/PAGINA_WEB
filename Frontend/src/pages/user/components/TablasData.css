@@ -1,0 +1,32 @@
+.seccion-tabla-container { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+.perfil-header-pagos { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.btn-nuevo-pago { background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(59,130,246,0.3); }
+.alert-info-tarifas { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e40af; padding: 12px 20px; border-radius: 8px; display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; font-size: 0.9rem; }
+.tabla-card { background: white; border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); }
+.tabla-custom { width: 100%; border-collapse: collapse; }
+.tabla-custom th { text-align: left; padding: 1rem; color: #64748b; border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; text-transform: uppercase; }
+.tabla-custom td { padding: 1.2rem 1rem; border-bottom: 1px solid #f1f5f9; color: #1e293b; }
+.monto-valor { font-weight: 700; color: #3b82f6; }
+.badge-pago { padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
+.badge-pago.pagado    { background: #d1fae5; color: #065f46; }
+.badge-pago.pendiente { background: #fef3c7; color: #92400e; }
+
+/* Modal pagos */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.modal-content-pago { background: white; width: 90%; max-width: 480px; border-radius: 24px; padding: 2rem; }
+.select-custom { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 8px; }
+.cantidad-selector { display: flex; align-items: center; gap: 15px; background: #f8fafc; padding: 12px; border-radius: 12px; margin-top: 8px; }
+.input-cantidad { width: 65px; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; text-align: center; font-weight: 700; }
+.upload-box { border: 2px dashed #cbd5e1; border-radius: 16px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; margin-top: 1.5rem; background: #f8fafc; }
+.preview-voucher { width: 100%; height: 100%; object-fit: contain; }
+.btn-confirmar-pago { width: 100%; background: #10b981; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 1rem; }
+.reporte-confirmacion { background: #f0fdf4; padding: 12px; border-radius: 10px; margin-top: 1rem; border: 1px solid #bbf7d0; font-size: 0.9rem; }
+
+@media (max-width: 768px) {
+    .seccion-tabla-container { width: 100%; padding: 16px; box-sizing: border-box; }
+    .perfil-header-pagos { flex-wrap: wrap; gap: 10px; }
+    .btn-nuevo-pago { width: 100%; }
+    .tabla-card { width: 100%; overflow-x: auto; border-radius: 16px; }
+    .tabla-custom th, .tabla-custom td { padding: 0.8rem 0.6rem; font-size: 0.82rem; }
+    .modal-content-pago { width: 95%; padding: 1.5rem; }
+}

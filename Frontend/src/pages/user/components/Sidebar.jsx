@@ -1,14 +1,15 @@
 import { FileUser, MessageSquare, Bolt, CreditCard, UserRound, Moon, Sun, DoorOpen, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import './Sidebar.css';
 
-export function Sidebar({ socio, seccionActual, setSeccion, tema, toggleTema, fotoPerfil, isOpen = false, onClose = () => {} }) {
+export function Sidebar({ socio, seccionActual, setSeccion, tema, toggleTema, fotoPerfil, isOpen = false, onClose = () => {}, onOpen = () => {} }) {
     const { logout } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogout = () => { 
-        logout(); 
-        navigate('/login'); 
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
     };
 
     const handleSeccion = (id) => {
@@ -26,13 +27,21 @@ export function Sidebar({ socio, seccionActual, setSeccion, tema, toggleTema, fo
 
     return (
         <>
+            {/* Botón hamburguesa */}
+            <button className="btn-menu" type="button" onClick={onOpen}>
+                ☰
+            </button>
+
+            {/* Overlay oscuro al abrir */}
             {isOpen && (
                 <div className="sidebar-overlay visible" onClick={onClose} />
             )}
 
-            <aside className={`dashboard-sidebar ${isOpen ? 'abierto' : ''}`}>
-                
-                <button className="btn-cerrar-sidebar" onClick={onClose}>
+            {/* Sidebar — solo controlado por isOpen */}
+            <div className={`sidebar ${isOpen ? 'sidebar-abierto' : ''}`}>
+
+                {/* Botón cerrar */}
+                <button type="button" className="sidebar-btn-close" onClick={onClose}>
                     <X size={20} />
                 </button>
 
@@ -53,12 +62,12 @@ export function Sidebar({ socio, seccionActual, setSeccion, tema, toggleTema, fo
 
                 <nav className="sidebar-nav">
                     {menuItems.map(item => (
-                        <button 
+                        <button
                             key={item.id}
-                            className={`nav-btn ${seccionActual === item.id ? 'activo' : ''}`} 
+                            className={`nav-btn ${seccionActual === item.id ? 'activo' : ''}`}
                             onClick={() => handleSeccion(item.id)}
                         >
-                            <item.icon size={20} className="nav-icon" /> 
+                            <item.icon size={20} className="nav-icon" />
                             <span>{item.label}</span>
                         </button>
                     ))}
@@ -74,13 +83,13 @@ export function Sidebar({ socio, seccionActual, setSeccion, tema, toggleTema, fo
                             <div className="switch-thumb" />
                         </div>
                     </div>
-                    
+
                     <button className="btn-logout" onClick={handleLogout}>
                         <DoorOpen size={20} />
                         <span>Cerrar Sesión</span>
                     </button>
                 </div>
-            </aside>
+            </div>
         </>
     );
 }

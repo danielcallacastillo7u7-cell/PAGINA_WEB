@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Heart, MessageSquare, Camera, X } from 'lucide-react';
+import './SeccionComunidad.css';
 
 export function SeccionComunidad({ socio, fotoPerfil }) {
     const [comentario, setComentario] = useState("");

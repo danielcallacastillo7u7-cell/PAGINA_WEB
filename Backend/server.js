@@ -6,14 +6,7 @@ const cors = require('cors')
 const app = express()
 
 // Middlewares
-app.use(cors({
-    origin: [
-        'http://localhost:5173',
-        'https://pagina-web-psi-two.vercel.app',
-        'https://pagina-web-vh21.vercel.app'
-    ],
-    credentials: true
-}));
+app.use(cors("*"));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json())

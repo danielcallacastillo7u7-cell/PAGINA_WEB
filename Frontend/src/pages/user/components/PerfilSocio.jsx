@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import './PerfilSocio.css';
 import { User, Mail, IdCard, CreditCard, Award, Camera, Loader2, CheckCircle } from 'lucide-react';
 
 export function PerfilSocio({ socio, fotoPerfil, setFotoPerfil }) {

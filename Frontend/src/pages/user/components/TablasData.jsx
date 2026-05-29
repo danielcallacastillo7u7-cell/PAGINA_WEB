@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Camera, Info, CheckCircle2, Clock, Utensils, ShoppingBag, CreditCard } from 'lucide-react';
+import './TablasData.css';
 
 // --- COMPONENTE PARA PAGOS (CUOTAS/MANTENIMIENTO) ---
 export function HistorialTabla({ titulo, data: inicialData }) {

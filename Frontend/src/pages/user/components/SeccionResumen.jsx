@@ -1,44 +1,97 @@
-import { FileText, Coins } from 'lucide-react';
-import { useState } from 'react';
+import { FileText, Coins, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownLeft, RefreshCw } from 'lucide-react';
+import './SeccionResumen.css';
+import { generarEstadoCuenta } from '../../../utils/generarEstadoCuenta';
 
-export function SeccionResumen({ cuenta, refrescar }) {
-    const [mostrarPago, setMostrarPago] = useState(false);
-    const [mensajePago, setMensajePago] = useState(''); // Movido aquí
 
-    const handleExito = () => {
-        setMensajePago("¡Pago informado con éxito!");
-        setMostrarPago(false);
-        refrescar();
-        setTimeout(() => setMensajePago(''), 5000);
-    };
+export function SeccionResumen({ cuenta, socio, refrescar }) {
+
+
 
     if (!cuenta) return <div className="sin-datos">No hay información de cuenta.</div>;
 
+    const movimientos = [
+        {
+            tipo: 'ingreso',
+            icono: <ArrowUpRight size={20} />,
+            label: 'Consumos del Mes',
+            monto: Number(cuenta.consumosMes).toFixed(2),
+            sub: 'Cargos por consumo',
+            gradient: 'grad-teal',
+        },
+        {
+            tipo: 'ingreso',
+            icono: <TrendingUp size={20} />,
+            label: 'Cargos Fijos',
+            monto: Number(cuenta.cargosFijos).toFixed(2),
+            sub: 'Membresía y servicios',
+            gradient: 'grad-gold',
+        },
+        {
+            tipo: 'egreso',
+            icono: <ArrowDownLeft size={20} />,
+            label: 'Pagos Realizados',
+            monto: Number(cuenta.pagosRealizados).toFixed(2),
+            sub: 'Abonos registrados',
+            gradient: 'grad-rose',
+        },
+        {
+            tipo: 'saldo',
+            icono: <TrendingDown size={20} />,
+            label: 'Saldo Pendiente',
+            monto: Number(cuenta.saldoPendiente).toFixed(2),
+            sub: 'Por liquidar',
+            gradient: 'grad-purple',
+        },
+    ];
+
     return (
-        <div className="section-fade">
-            <div className="dashboard-header">
-                <h2>Estado de Cuenta — {cuenta.mes}</h2>
-                <button className="btn-pdf" onClick={() => window.print()}><FileText size={18} /> PDF</button>
-            </div>
+        <div className="resumen-wrapper section-fade">
 
-            <div className="resumen-cards">
-                <div className="resumen-card azul"><p>Consumos</p><h3>S/ {Number(cuenta.consumosMes).toFixed(2)}</h3></div>
-                <div className="resumen-card naranja"><p>Fijos</p><h3>S/ {Number(cuenta.cargosFijos).toFixed(2)}</h3></div>
-                <div className="resumen-card gris"><p>Pagos</p><h3>S/ {Number(cuenta.pagosRealizados).toFixed(2)}</h3></div>
-                <div className="resumen-card rojo"><p>Saldo</p><h3>S/ {Number(cuenta.saldoPendiente).toFixed(2)}</h3></div>
-            </div>
-
-            <div className="pago-section">
-                {mensajePago && <div className="alerta-pago">{mensajePago}</div>}
-                <button className="btn-pagar" onClick={() => setMostrarPago(!mostrarPago)}>
-                    <Coins size={20} /> {mostrarPago ? 'Cancelar' : 'Informar Pago'}
-                </button>
-                {mostrarPago && (
-                    <div className="form-pago-container">
-                        <button className="btn-enviar-pago" onClick={handleExito}>Confirmar Pago</button>
+            {/* Header */}
+            <div className="resumen-hero">
+                <div className="resumen-hero-top">
+                    <div>
+                        <p className="resumen-periodo">Estado de Cuenta</p>
+                        <h1 className="resumen-mes">{cuenta.mes}</h1>
                     </div>
-                )}
+                    <div className="resumen-hero-actions">
+                        <button className="btn-icon-hero" onClick={refrescar} title="Actualizar">
+                            <RefreshCw size={18} />
+                        </button>
+                        <button className="btn-icon-hero" onClick={() => generarEstadoCuenta(socio, cuenta)} title="PDF">
+    <FileText size={18} />
+</button>
+                    </div>
+                </div>
+
+                <div className="resumen-saldo-total">
+                    <span className="saldo-label">Saldo Pendiente</span>
+                    <span className="saldo-monto">S/ {Number(cuenta.saldoPendiente).toFixed(2)}</span>
+                </div>
             </div>
+
+            {/* Movimientos */}
+            <div className="resumen-section-title">Resumen del Mes</div>
+
+            <div className="movimientos-list">
+                {movimientos.map((m, i) => (
+                    <div className={`mov-card ${m.gradient}`} key={i}>
+                        <div className="mov-card-left">
+                            <div className="mov-icon-wrap">
+                                {m.icono}
+                            </div>
+                            <div className="mov-info">
+                                <span className="mov-label">{m.label}</span>
+                                <span className="mov-sub">{m.sub}</span>
+                            </div>
+                        </div>
+                        <div className="mov-monto">
+                            <span>S/</span> {m.monto}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
         </div>
     );
 }

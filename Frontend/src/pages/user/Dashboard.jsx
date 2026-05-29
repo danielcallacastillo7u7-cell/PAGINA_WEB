@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Sidebar } from './components/Sidebar';
 import { SeccionResumen } from './components/SeccionResumen';
 import { SeccionComunidad } from './components/SeccionComunidad';
-import { HistorialTabla, ConsumosTabla } from './components/TablasData'; 
+import { HistorialTabla, ConsumosTabla } from './components/TablasData';
 import { PerfilSocio } from './components/PerfilSocio';
 import { Loader2, FileUser, MessageSquare, Bolt, CreditCard, UserRound } from 'lucide-react';
 import { getPerfil, getCuentaMensual, getConsumos, getPagos } from '../../services/socioService';
@@ -18,11 +18,12 @@ const MENU = [
 ];
 
 export default function Dashboard() {
-    const [seccion, setSeccion] = useState('resumen');
-    const [tema, setTema] = useState(() => localStorage.getItem('theme') || 'light');
-    const [datos, setDatos] = useState({ socio: null, cuenta: null, consumos: [], pagos: [] });
-    const [cargando, setCargando] = useState(true);
-    const [fotoPerfil, setFotoPerfil] = useState(() => localStorage.getItem('fotoPerfilSocio') || null);
+    const [seccion, setSeccion]         = useState('resumen');
+    const [tema, setTema]               = useState(() => localStorage.getItem('theme') || 'light');
+    const [datos, setDatos]             = useState({ socio: null, cuenta: null, consumos: [], pagos: [] });
+    const [cargando, setCargando]       = useState(true);
+    const [fotoPerfil, setFotoPerfil]   = useState(() => localStorage.getItem('fotoPerfilSocio') || null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const { usuario } = useAuth();
 
     const actualizarFoto = (nuevaFoto) => {
@@ -66,6 +67,8 @@ export default function Dashboard() {
         </div>
     );
 
+    const seccionActiva = MENU.find(m => m.id === seccion)?.label || 'Inicio';
+
     return (
         <div className="dashboard" data-theme={tema}>
 
@@ -76,48 +79,49 @@ export default function Dashboard() {
                 tema={tema}
                 toggleTema={toggleTema}
                 fotoPerfil={fotoPerfil}
+                isOpen={sidebarOpen}
+                onOpen={() => setSidebarOpen(true)}
+                onClose={() => setSidebarOpen(false)}
             />
 
             <main className="dashboard-main">
 
-                {/* Header móvil */}
+                {/* ── Topbar móvil ── */}
                 <div className="mobile-topbar">
-                    <div className="mobile-topbar-left">
-                        <div className="mobile-avatar">
-                            {fotoPerfil
-                                ? <img src={fotoPerfil} alt="perfil" />
-                                : datos.socio?.nombre?.[0]?.toUpperCase() || 'D'}
+                    <div className="topbar-perfil">
+                        <div className="topbar-avatar-wrap">
+                            <div className="topbar-avatar">
+                                {fotoPerfil
+                                    ? <img src={fotoPerfil} alt="Perfil" className="avatar-img-min" />
+                                    : <span>{datos.socio?.nombre?.[0]?.toUpperCase() || 'D'}</span>
+                                }
+                            </div>
+                            <div className="topbar-status-dot" />
                         </div>
-                        <div className="mobile-user-info">
-                            <h4>{datos.socio?.nombre} {datos.socio?.apellido}</h4>
-                            <p>● {datos.socio?.estado || 'Activo'}</p>
+                        <div className="topbar-info">
+                            <p className="topbar-saludo">👋 Hola,</p>
+                            <h4 className="topbar-nombre">
+                                {datos.socio?.nombre} {datos.socio?.apellido}
+                            </h4>
+                            <span className="topbar-badge">
+                                {datos.socio?.tipoSocio || 'Socio Titular'}
+                            </span>
                         </div>
                     </div>
-                    <span className="mobile-badge">Socio</span>
+
+                    <div className="topbar-seccion">
+                        <span className="topbar-seccion-en">Estás en</span>
+                        <span className="topbar-seccion-nombre">{seccionActiva}</span>
+                        <span className="topbar-seccion-dot" />
+                    </div>
                 </div>
 
-                {/* Secciones */}
-                {seccion === 'resumen'   && <SeccionResumen cuenta={datos.cuenta} refrescar={cargarTodo} />}
+                {/* ── Secciones ── */}
+                {seccion === 'resumen'   && <SeccionResumen cuenta={datos.cuenta} socio={datos.socio} refrescar={cargarTodo} />}
                 {seccion === 'comunidad' && <SeccionComunidad socio={datos.socio} fotoPerfil={fotoPerfil} />}
                 {seccion === 'consumos'  && <ConsumosTabla data={datos.consumos} alPagar={() => setSeccion('pagos')} />}
                 {seccion === 'pagos'     && <HistorialTabla titulo="Mis Pagos" data={datos.pagos} />}
                 {seccion === 'perfil'    && <PerfilSocio socio={datos.socio} fotoPerfil={fotoPerfil} setFotoPerfil={actualizarFoto} />}
-
-                {/* Barra inferior móvil */}
-                {/* Barra inferior móvil */}
-<nav className="bottom-nav-mobile">
-    {/* eslint-disable-next-line no-unused-vars */}
-    {MENU.map(({ id, Icon, label }) => (
-        <button
-            key={id}
-            className={`bottom-nav-item ${seccion === id ? 'activo' : ''}`}
-            onClick={() => setSeccion(id)}
-        >
-            <Icon size={20} />
-            <span>{label}</span>
-        </button>
-    ))}
-</nav>
 
             </main>
         </div>

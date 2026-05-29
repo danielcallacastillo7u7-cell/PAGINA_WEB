@@ -1,0 +1,340 @@
+/* ============================================
+   WRAPPER
+   ============================================ */
+.resumen-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 1rem 1rem 6rem;
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   HERO / HEADER
+   ============================================ */
+.resumen-hero {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    border-radius: 24px;
+    padding: 1.5rem 1.5rem 2rem;
+    color: white;
+    box-shadow: 0 8px 30px rgba(37, 99, 235, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.resumen-hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+}
+
+.resumen-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -20px;
+    width: 130px; height: 130px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+}
+
+.resumen-hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.resumen-periodo {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.65);
+    margin: 0 0 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.resumen-mes {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+}
+
+.resumen-hero-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icon-hero {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background 0.2s;
+}
+
+.btn-icon-hero:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.resumen-saldo-total {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+}
+
+.saldo-label {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 4px;
+}
+
+.saldo-monto {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.5px;
+    line-height: 1;
+}
+
+/* ============================================
+   TÍTULO DE SECCIÓN
+   ============================================ */
+.resumen-section-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-main);
+    padding: 0 0.2rem;
+    letter-spacing: 0.02em;
+}
+
+/* ============================================
+   TARJETAS DE MOVIMIENTOS
+   ============================================ */
+.movimientos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.mov-card {
+    display: grid;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 20px;
+    padding: 1.1rem 8.5rem;
+    color: white;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.mov-card::after {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 90px; height: 90px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+}
+
+.mov-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+/* Gradientes por tarjeta */
+.grad-teal   { background: linear-gradient(135deg, #0d9488, #06b6d4); }
+.grad-gold   { background: linear-gradient(135deg, #d97706, #f59e0b); }
+.grad-rose   { background: linear-gradient(135deg, #e11d48, #f43f5e); }
+.grad-purple { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+
+.mov-card-left {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.mov-icon-wrap {
+    width: 42px; height: 42px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    backdrop-filter: blur(4px);
+}
+
+.mov-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.mov-label {
+    font-size: 1.0rem;
+    font-weight: 600;
+    color: white;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.mov-sub {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.7);
+    margin-top: 2px;
+}
+
+.mov-monto {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.3px;
+    gap: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+.mov-monto span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.8;
+    margin-right: 2px;
+}
+.mov-sub {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.75);
+    margin-top: 3px;
+}
+
+/* ============================================
+   SECCIÓN DE PAGO
+   ============================================ */
+.pago-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.4rem;
+}
+
+.btn-pagar-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-pagar-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.45);
+}
+
+.btn-pagar-main.cancelar {
+    background: #f1f5f9;
+    color: #64748b;
+    box-shadow: none;
+}
+
+.form-pago-container {
+    background: var(--bg-card, #f8fafc);
+    border-radius: 18px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+.form-pago-aviso {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+.btn-confirmar-pago {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: #22c55e;
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-confirmar-pago:hover {
+    background: #16a34a;
+    transform: translateY(-1px);
+}
+
+.alerta-pago {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+[data-theme="dark"] .btn-pagar-main.cancelar {
+    background: #1e293b;
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .form-pago-container {
+    background: #1e293b;
+    border-color: rgba(255,255,255,0.06);
+}
+
+[data-theme="dark"] .resumen-section-title {
+    color: #e2e8f0;
+}
+
+/* ============================================
+   ANIMACIÓN ENTRADA
+   ============================================ */
+.section-fade {
+    animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.mov-card:nth-child(1) { animation: fadeUp 0.4s ease 0.05s both; }
+.mov-card:nth-child(2) { animation: fadeUp 0.4s ease 0.10s both; }
+.mov-card:nth-child(3) { animation: fadeUp 0.4s ease 0.15s both; }
+.mov-card:nth-child(4) { animation: fadeUp 0.4s ease 0.20s both; }
