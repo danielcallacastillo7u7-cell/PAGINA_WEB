@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import pagosRoutes from "./routes/pagos.routes.js";
-
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 dotenv.config();
 
@@ -17,6 +17,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/pagos", pagosRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend funcionando");
