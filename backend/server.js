@@ -9,6 +9,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 dotenv.config();
 
 const app = express();
+const sociosRoutes = require("./routes/socios.routes");
 
 app.use(cors());
 app.use(express.json());
@@ -18,6 +19,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/pagos", pagosRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/socios", sociosRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend funcionando");
