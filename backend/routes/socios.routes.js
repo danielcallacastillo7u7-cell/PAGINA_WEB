@@ -1,6 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const pool = require("../db");
+import { Router } from "express";
+import { pool } from "../db.js";
+
+const router = Router();
 
 router.get("/", async (req, res) => {
   try {
@@ -9,15 +10,10 @@ router.get("/", async (req, res) => {
         id,
         nombre,
         correo,
-        dni,
-        telefono,
-        direccion,
-        zona,
-        lote,
         estado,
-        tipo_socio
+        rol
       FROM usuarios
-      WHERE rol='usuario'
+      WHERE rol = 'usuario'
       ORDER BY nombre
     `);
 
@@ -25,9 +21,9 @@ router.get("/", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      mensaje: "Error obteniendo socios"
+      mensaje: "Error obteniendo socios",
     });
   }
 });
 
-module.exports = router;
+export default router;

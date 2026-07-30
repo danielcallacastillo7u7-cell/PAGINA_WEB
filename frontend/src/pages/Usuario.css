@@ -687,3 +687,38 @@ button {
     width: 100%;
   }
 }
+.monto-detectado {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #eef3ff;
+  color: #2544a3;
+  font-weight: 900;
+}
+
+@media (min-width: 851px) {
+  .mi-pago-card {
+    grid-template-columns: 1.2fr 0.8fr 0.9fr 0.8fr auto auto;
+  }
+}
+
+.pago-form textarea {
+  width: 100%;
+  border: 1px solid #dce4f0;
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.pago-form textarea:focus {
+  border-color: #2544a3;
+  outline: none;
+  background: white;
+}
+
+@media (min-width: 851px) {
+  .mi-pago-card {
+    grid-template-columns: 1.1fr 1.5fr auto auto;
+  }
+}

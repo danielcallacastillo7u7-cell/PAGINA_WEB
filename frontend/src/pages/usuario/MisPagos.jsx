@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 
 function MisPagos() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
@@ -28,10 +28,20 @@ function MisPagos() {
   }, [usuario?.id]);
 
   function formatearFecha(fecha) {
+    if (!fecha) return "Sin fecha";
+
     return new Date(fecha).toLocaleString("es-PE", {
       dateStyle: "medium",
       timeStyle: "short",
     });
+  }
+
+  function formatearMonto(monto) {
+    const numero = Number(monto || 0);
+
+    if (numero <= 0) return "Pendiente de revision";
+
+    return `S/ ${numero.toFixed(2)}`;
   }
 
   return (
@@ -39,38 +49,37 @@ function MisPagos() {
       <header className="perfil-header">
         <div>
           <span>Mis pagos</span>
-          <h1>Historial de movimientos</h1>
+          <h1>Historial de solicitudes</h1>
           <p>
-            Revisa todos tus pagos enviados, comprobantes, fechas, horas y
-            estado de validación.
+            Revisa tus comprobantes enviados, fecha, hora, monto registrado y estado de validacion.
           </p>
         </div>
       </header>
 
       <section className="cuotas-box">
-        <h2>Mis movimientos</h2>
+        <h2>Mis solicitudes</h2>
 
         <div className="mis-pagos-lista">
           {cargando ? (
-            <p>Cargando pagos...</p>
+            <p>Cargando solicitudes...</p>
           ) : pagos.length === 0 ? (
-            <p>Todavía no tienes pagos registrados.</p>
+            <p>Todavia no tienes solicitudes registradas.</p>
           ) : (
             pagos.map((pago) => (
               <article className="mi-pago-card" key={pago.id}>
                 <div>
-                  <h3>Pago #{pago.id}</h3>
+                  <h3>Solicitud #{pago.id}</h3>
                   <p>{formatearFecha(pago.fecha_pago)}</p>
                 </div>
 
                 <div>
-                  <span>Monto</span>
-                  <strong>S/ {pago.monto}</strong>
+                  <span>Descripcion</span>
+                  <strong>{pago.descripcion || "Sin descripcion"}</strong>
                 </div>
 
                 <div>
-                  <span>Método</span>
-                  <strong>{pago.metodo}</strong>
+                  <span>Monto registrado</span>
+                  <strong>{formatearMonto(pago.monto)}</strong>
                 </div>
 
                 <em
@@ -86,11 +95,7 @@ function MisPagos() {
                 </em>
 
                 {pago.comprobante_url ? (
-                  <a
-                    href={pago.comprobante_url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
+                  <a href={pago.comprobante_url} target="_blank" rel="noreferrer">
                     Ver comprobante
                   </a>
                 ) : (

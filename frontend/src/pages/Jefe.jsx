@@ -2,9 +2,9 @@ import { useState } from "react";
 
 import "./Panel.css";
 
-import Socios from "./jefe/Socios";
-import Dashboard from "./jefe/Dashboard";
-import JefeSidebar from "./jefe/JefeSidebar";
+import Socios from "./Jefe/socios.jsx";
+import Dashboard from "./Jefe/dashboard.jsx";
+import JefeSidebar from "./Jefe/jefesidebar.jsx";
 
 function Jefe() {
 

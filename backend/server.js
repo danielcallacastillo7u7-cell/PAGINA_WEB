@@ -5,11 +5,10 @@ import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import pagosRoutes from "./routes/pagos.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
-
+import sociosRoutes from "./routes/socios.routes.js";
 dotenv.config();
 
 const app = express();
-const sociosRoutes = require("./routes/socios.routes");
 
 app.use(cors());
 app.use(express.json());

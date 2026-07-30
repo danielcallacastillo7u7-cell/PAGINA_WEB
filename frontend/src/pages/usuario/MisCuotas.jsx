@@ -1,10 +1,9 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 
 function MisCuotas() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-  const [monto, setMonto] = useState("");
-  const [metodo, setMetodo] = useState("Yape");
+  const [descripcion, setDescripcion] = useState("");
   const [comprobante, setComprobante] = useState(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -12,19 +11,18 @@ function MisCuotas() {
     e.preventDefault();
 
     if (!usuario?.id) {
-      alert("No se encontró el usuario en sesión.");
+      alert("No se encontro el usuario en sesion.");
       return;
     }
 
-    if (!monto || !metodo || !comprobante) {
-      alert("Completa monto, método y comprobante.");
+    if (!descripcion || !comprobante) {
+      alert("Escribe la descripcion del pago y sube tu comprobante.");
       return;
     }
 
     const formData = new FormData();
     formData.append("usuario_id", usuario.id);
-    formData.append("monto", monto);
-    formData.append("metodo", metodo);
+    formData.append("descripcion", descripcion);
     formData.append("comprobante", comprobante);
 
     try {
@@ -38,19 +36,18 @@ function MisCuotas() {
       const resultado = await respuesta.json();
 
       if (!respuesta.ok) {
-        alert(resultado.mensaje || "No se pudo enviar el pago.");
+        alert(resultado.mensaje || "No se pudo enviar la solicitud de pago.");
         return;
       }
 
-      alert("Pago enviado correctamente. Queda pendiente de aprobación.");
+      alert("Solicitud de pago enviada correctamente. Queda pendiente de validacion.");
 
-      setMonto("");
-      setMetodo("Yape");
+      setDescripcion("");
       setComprobante(null);
       e.target.reset();
     } catch (error) {
       console.error(error);
-      alert("Error al enviar pago.");
+      alert("Error al enviar la solicitud de pago.");
     } finally {
       setEnviando(false);
     }
@@ -61,50 +58,34 @@ function MisCuotas() {
       <header className="perfil-header">
         <div>
           <span>Mis cuotas</span>
-          <h1>Enviar comprobante de pago</h1>
+          <h1>Enviar comprobante</h1>
           <p>
-            Registra tu pago y adjunta una imagen del comprobante para que
-            administración lo valide.
+            Describe a que corresponde tu pago y adjunta el comprobante para que administracion lo valide.
           </p>
         </div>
       </header>
 
       <section className="deuda-card deuda-pendiente">
         <div>
-          <span className="estado-deuda">Pago pendiente de validación</span>
-          <h2>Registrar pago</h2>
-          <p>Tu comprobante será revisado por administración.</p>
+          <span className="estado-deuda">Solicitud pendiente de validacion</span>
+          <h2>Comprobante de pago</h2>
+          <p>Tu solicitud quedara registrada como procesando hasta que el administrador la revise.</p>
         </div>
       </section>
 
       <section className="cuotas-box">
-        <h2>Datos del pago</h2>
+        <h2>Datos de la solicitud</h2>
 
         <form className="pago-form" onSubmit={enviarPago}>
           <label>
-            Monto pagado
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Ejemplo: 180"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
+            Descripcion del pago
+            <textarea
+              placeholder="Ejemplo: Pago de cuota de julio, mantenimiento o reserva de salon"
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+              rows="4"
               required
             />
-          </label>
-
-          <label>
-            Método de pago
-            <select
-              value={metodo}
-              onChange={(e) => setMetodo(e.target.value)}
-              required
-            >
-              <option value="Yape">Yape</option>
-              <option value="Plin">Plin</option>
-              <option value="Transferencia">Transferencia bancaria</option>
-              <option value="Efectivo">Efectivo</option>
-            </select>
           </label>
 
           <label>

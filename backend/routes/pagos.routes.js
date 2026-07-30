@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import multer from "multer";
 import { pool } from "../db.js";
 
@@ -7,42 +7,57 @@ const router = Router();
 const storage = multer.diskStorage({
   destination: "uploads/",
   filename: (req, file, cb) => {
-    const nombreUnico = Date.now() + "-" + file.originalname;
+    const nombreSeguro = file.originalname.replace(/\s/g, "-");
+    const nombreUnico = Date.now() + "-" + nombreSeguro;
     cb(null, nombreUnico);
   },
 });
 
 const upload = multer({ storage });
 
+function validarMontoAdmin(valor) {
+  if (valor === undefined || valor === null || valor === "") return null;
+
+  const monto = Number(valor);
+  if (!Number.isFinite(monto) || monto < 0) return null;
+
+  return monto;
+}
+
 router.post("/", upload.single("comprobante"), async (req, res) => {
   try {
-    const { usuario_id, cuota_id, monto, metodo } = req.body;
+    const { usuario_id, descripcion } = req.body;
 
-    if (!usuario_id || !monto || !metodo) {
+    if (!usuario_id || !descripcion) {
       return res.status(400).json({
-        mensaje: "Faltan datos obligatorios",
+        mensaje: "La descripcion del pago es obligatoria",
       });
     }
 
-    const comprobanteUrl = req.file
-      ? `http://localhost:3000/uploads/${req.file.filename}`
-      : null;
+    if (!req.file) {
+      return res.status(400).json({
+        mensaje: "Debes subir un comprobante",
+      });
+    }
+
+    const comprobanteUrl = `http://localhost:3000/uploads/${req.file.filename}`;
 
     const resultado = await pool.query(
-      `INSERT INTO pagos (usuario_id, cuota_id, monto, metodo, comprobante_url)
+      `INSERT INTO pagos (usuario_id, monto, metodo, comprobante_url, descripcion)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [usuario_id, cuota_id || null, monto, metodo, comprobanteUrl]
+      [usuario_id, 0, "Comprobante", comprobanteUrl, descripcion]
     );
 
     res.status(201).json({
-      mensaje: "Pago enviado correctamente",
+      mensaje: "Solicitud de pago enviada correctamente",
       pago: resultado.rows[0],
     });
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
-      mensaje: "Error al registrar pago",
+      mensaje: "Error al registrar la solicitud de pago",
     });
   }
 });
@@ -54,6 +69,7 @@ router.get("/", async (req, res) => {
         pagos.id,
         pagos.monto,
         pagos.metodo,
+        pagos.descripcion,
         pagos.comprobante_url,
         pagos.estado,
         pagos.fecha_pago,
@@ -67,6 +83,7 @@ router.get("/", async (req, res) => {
     res.json(resultado.rows);
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
       mensaje: "Error al obtener pagos",
     });
@@ -82,6 +99,7 @@ router.get("/usuario/:usuarioId", async (req, res) => {
         id,
         monto,
         metodo,
+        descripcion,
         comprobante_url,
         estado,
         fecha_pago
@@ -94,6 +112,7 @@ router.get("/usuario/:usuarioId", async (req, res) => {
     res.json(resultado.rows);
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
       mensaje: "Error al obtener pagos del usuario",
     });
@@ -103,13 +122,20 @@ router.get("/usuario/:usuarioId", async (req, res) => {
 router.patch("/:id/aprobar", async (req, res) => {
   try {
     const { id } = req.params;
+    const montoAdmin = validarMontoAdmin(req.body.monto);
+
+    if (montoAdmin === null) {
+      return res.status(400).json({
+        mensaje: "Ingresa un monto valido para aprobar el pago",
+      });
+    }
 
     const pago = await pool.query(
       `UPDATE pagos
-       SET estado = 'acreditado'
+       SET estado = 'acreditado', monto = $2
        WHERE id = $1
        RETURNING *`,
-      [id]
+      [id, montoAdmin]
     );
 
     if (pago.rows.length === 0) {
@@ -133,6 +159,7 @@ router.patch("/:id/aprobar", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
       mensaje: "Error al aprobar pago",
     });
@@ -142,13 +169,20 @@ router.patch("/:id/aprobar", async (req, res) => {
 router.patch("/:id/rechazar", async (req, res) => {
   try {
     const { id } = req.params;
+    const montoAdmin = validarMontoAdmin(req.body.monto);
+
+    if (montoAdmin === null) {
+      return res.status(400).json({
+        mensaje: "Ingresa un monto valido para rechazar el pago",
+      });
+    }
 
     const resultado = await pool.query(
       `UPDATE pagos
-       SET estado = 'rechazado'
+       SET estado = 'rechazado', monto = $2
        WHERE id = $1
        RETURNING *`,
-      [id]
+      [id, montoAdmin]
     );
 
     if (resultado.rows.length === 0) {
@@ -163,6 +197,7 @@ router.patch("/:id/rechazar", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
       mensaje: "Error al rechazar pago",
     });

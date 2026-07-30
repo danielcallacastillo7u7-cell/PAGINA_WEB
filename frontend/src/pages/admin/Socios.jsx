@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 
 function Socios() {
   const [busqueda, setBusqueda] = useState("");
@@ -9,6 +9,8 @@ function Socios() {
   const [verConfirmarPassword, setVerConfirmarPassword] = useState(false);
   const [socioEditando, setSocioEditando] = useState(null);
   const [historialSocio, setHistorialSocio] = useState(null);
+  const [historialPagos, setHistorialPagos] = useState([]);
+  const [cargandoHistorial, setCargandoHistorial] = useState(false);
 
   const [nuevoSocio, setNuevoSocio] = useState({
     nombre: "",
@@ -60,13 +62,13 @@ function Socios() {
 
     if (!passwordValida(nuevoSocio.password)) {
       alert(
-        "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un símbolo."
+        "La contraseÃ±a debe tener mÃ­nimo 8 caracteres, una mayÃºscula, una minÃºscula, un nÃºmero y un sÃ­mbolo."
       );
       return;
     }
 
     if (nuevoSocio.password !== nuevoSocio.confirmarPassword) {
-      alert("Las contraseñas no coinciden.");
+      alert("Las contraseÃ±as no coinciden.");
       return;
     }
 
@@ -103,8 +105,40 @@ function Socios() {
     cargarSocios();
   }
 
-  function verHistorial(socio) {
+  async function verHistorial(socio) {
     setHistorialSocio(socio);
+    setHistorialPagos([]);
+    setCargandoHistorial(true);
+
+    try {
+      const respuesta = await fetch(
+        `http://localhost:3000/api/pagos/usuario/${socio.id}`
+      );
+      const datos = await respuesta.json();
+      setHistorialPagos(datos);
+    } catch (error) {
+      console.error("Error cargando historial:", error);
+      alert("No se pudo cargar el historial del socio.");
+    } finally {
+      setCargandoHistorial(false);
+    }
+  }
+
+  function formatearFecha(fecha) {
+    if (!fecha) return "Sin fecha";
+
+    return new Date(fecha).toLocaleString("es-PE", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  }
+
+  function formatearMonto(monto) {
+    const numero = Number(monto || 0);
+
+    if (numero <= 0) return "Pendiente de revision";
+
+    return `S/ ${numero.toFixed(2)}`;
   }
 
   function editarSocio(socio) {
@@ -152,7 +186,7 @@ function Socios() {
   }
 
   async function desactivarSocio(id) {
-    const confirmar = confirm("¿Seguro que deseas desactivar este socio?");
+    const confirmar = confirm("Â¿Seguro que deseas desactivar este socio?");
 
     if (!confirmar) return;
 
@@ -175,7 +209,7 @@ function Socios() {
   }
 
   async function activarSocio(id) {
-    const confirmar = confirm("¿Seguro que deseas activar este socio?");
+    const confirmar = confirm("Â¿Seguro que deseas activar este socio?");
 
     if (!confirmar) return;
 
@@ -216,10 +250,10 @@ function Socios() {
       <header className="admin-header">
         <div>
           <span>Panel del Administrador</span>
-          <h1>Gestión de Socios</h1>
+          <h1>GestiÃ³n de Socios</h1>
           <p>
             Registra socios, consulta usuarios guardados y busca por nombre,
-            correo o código.
+            correo o cÃ³digo.
           </p>
         </div>
 
@@ -244,13 +278,13 @@ function Socios() {
         <article className="stat-card alerta">
           <span>Socios inactivos</span>
           <strong>{sociosInactivos}</strong>
-          <small>Requieren revisión</small>
+          <small>Requieren revisiÃ³n</small>
         </article>
 
         <article className="stat-card">
           <span>Resultados</span>
           <strong>{sociosFiltrados.length}</strong>
-          <small>Coinciden con la búsqueda</small>
+          <small>Coinciden con la bÃºsqueda</small>
         </article>
       </section>
 
@@ -264,7 +298,7 @@ function Socios() {
               <input
                 type="text"
                 name="nombre"
-                placeholder="Ejemplo: Juan Pérez"
+                placeholder="Ejemplo: Juan PÃ©rez"
                 value={nuevoSocio.nombre}
                 onChange={cambiarDato}
                 required
@@ -272,7 +306,7 @@ function Socios() {
             </label>
 
             <label>
-              Correo electrónico
+              Correo electrÃ³nico
               <input
                 type="email"
                 name="correo"
@@ -284,12 +318,12 @@ function Socios() {
             </label>
 
             <label>
-              Contraseña
+              ContraseÃ±a
               <div className="password-campo">
                 <input
                   type={verPassword ? "text" : "password"}
                   name="password"
-                  placeholder="Crea una contraseña segura"
+                  placeholder="Crea una contraseÃ±a segura"
                   value={nuevoSocio.password}
                   onChange={cambiarDato}
                   required
@@ -305,12 +339,12 @@ function Socios() {
             </label>
 
             <label>
-              Confirmar contraseña
+              Confirmar contraseÃ±a
               <div className="password-campo">
                 <input
                   type={verConfirmarPassword ? "text" : "password"}
                   name="confirmarPassword"
-                  placeholder="Repite la contraseña"
+                  placeholder="Repite la contraseÃ±a"
                   value={nuevoSocio.confirmarPassword}
                   onChange={cambiarDato}
                   required
@@ -328,8 +362,8 @@ function Socios() {
             </label>
 
             <div className="password-ayuda">
-              La contraseña debe tener mínimo 8 caracteres, una mayúscula, una
-              minúscula, un número y un símbolo.
+              La contraseÃ±a debe tener mÃ­nimo 8 caracteres, una mayÃºscula, una
+              minÃºscula, un nÃºmero y un sÃ­mbolo.
             </div>
 
             <button type="submit">Guardar socio</button>
@@ -354,7 +388,7 @@ function Socios() {
             </label>
 
             <label>
-              Correo electrónico
+              Correo electrÃ³nico
               <input
                 type="email"
                 name="correo"
@@ -393,8 +427,8 @@ function Socios() {
 
           <div className="historial-lista">
             <div>Registro de socio creado en el sistema</div>
-            <div>Sin historial de pagos real todavía</div>
-            <div>Más adelante aquí aparecerán cuotas, pagos y recibos</div>
+            <div>Sin historial de pagos real todavÃ­a</div>
+            <div>MÃ¡s adelante aquÃ­ aparecerÃ¡n cuotas, pagos y recibos</div>
           </div>
         </section>
       )}
@@ -403,7 +437,7 @@ function Socios() {
         <div className="socios-toolbar">
           <input
             type="text"
-            placeholder="Buscar por nombre, correo o código"
+            placeholder="Buscar por nombre, correo o cÃ³digo"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
@@ -422,7 +456,7 @@ function Socios() {
                 <div>
                   <h3>{socio.nombre}</h3>
                   <p>
-                    Usuario #{socio.id} · {socio.correo}
+                    Usuario #{socio.id} Â· {socio.correo}
                   </p>
                   <span>Rol: {socio.rol}</span>
                 </div>
@@ -464,3 +498,5 @@ function Socios() {
 }
 
 export default Socios;
+
+

@@ -1,8 +1,9 @@
 import SocioDetalle from "./SocioDetalle";
 import { useEffect, useState } from "react";
-const [socioSeleccionado, setSocioSeleccionado] = useState(null);
 
 function Socios() {
+    const [socioSeleccionado, setSocioSeleccionado] = useState(null);
+
     const [socios, setSocios] = useState([]);
     const [cargando, setCargando] = useState(true);
 

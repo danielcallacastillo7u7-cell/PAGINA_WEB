@@ -1,4 +1,4 @@
-* {
+﻿* {
   box-sizing: border-box;
 }
 
@@ -552,4 +552,90 @@ button {
   color: white;
   text-decoration: none;
   font-weight: 900;
+}
+.socio-contacto em.pendiente {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.historial-pago-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f3f6fb;
+}
+
+.historial-pago-item strong,
+.historial-pago-item span,
+.historial-pago-item p {
+  display: block;
+}
+
+.historial-pago-item span {
+  margin-top: 4px;
+  color: #667085;
+  font-size: 14px;
+}
+
+.historial-pago-item p {
+  margin: 8px 0 0;
+  color: #07111f;
+}
+
+.historial-pago-item em {
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.historial-pago-item em.activo {
+  background: #ecfdf3;
+  color: #16a34a;
+}
+
+.historial-pago-item em.inactivo {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.historial-pago-item em.pendiente {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+@media (max-width: 760px) {
+  .historial-pago-item {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pago-fecha {
+  margin-top: 10px !important;
+  color: #667085 !important;
+  font-size: 14px;
+}
+
+@media (max-width: 760px) {
+  .admin-header-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-header-actions button {
+    width: 100%;
+  }
 }
