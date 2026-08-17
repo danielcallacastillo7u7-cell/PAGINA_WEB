@@ -5,6 +5,7 @@ import "./Panel.css";
 import Socios from "./Jefe/socios.jsx";
 import Dashboard from "./Jefe/dashboard.jsx";
 import JefeSidebar from "./Jefe/jefesidebar.jsx";
+import Pagos from "./jefe/Pagos";
 
 function Jefe() {
 
@@ -38,8 +39,9 @@ function Jefe() {
 
       <main className="admin-main">
 
-        {seccion === "dashboard" && <Dashboard />}
-        {seccion==="socios" && <Socios />}
+      {seccion === "dashboard" && <Dashboard />}
+      {seccion === "socios" && <Socios />}
+      {seccion === "pagos" && <Pagos />}
 
       </main>
 

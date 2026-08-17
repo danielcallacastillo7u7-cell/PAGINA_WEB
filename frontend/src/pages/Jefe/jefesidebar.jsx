@@ -20,11 +20,8 @@ function JefeSidebar({
       </button>
 
       <div className="sidebar-logo">
-
         <h2>ClubCuotas</h2>
-
         <span>Panel del jefe</span>
-
       </div>
 
       <nav className="sidebar-menu">
@@ -41,6 +38,13 @@ function JefeSidebar({
           onClick={() => cambiar("socios")}
         >
           Socios
+        </button>
+
+        <button
+          className={seccion === "pagos" ? "activo" : ""}
+          onClick={() => cambiar("pagos")}
+        >
+          Pagos
         </button>
 
         <button
