@@ -1,4 +1,4 @@
-import SocioDetalle from "./SocioDetalle";
+import SocioDetalle from "./sociodetalle.jsx";
 import { useEffect, useState } from "react";
 
 function Socios() {
