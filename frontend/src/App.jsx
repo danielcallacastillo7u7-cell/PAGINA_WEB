@@ -13,7 +13,11 @@ function App() {
             <a href="#galeria">Espacios</a>
             <a href="#contacto">Contacto</a>
           </nav>
-          <a className="btn-login" href="/login">Iniciar sesión</a>        </header>
+
+          <a className="btn-login" href="/login">
+            Iniciar sesión
+          </a>
+        </header>
 
         <div className="hero-contenido">
           <span className="hero-etiqueta">Club privado de viviendas</span>
@@ -26,8 +30,13 @@ function App() {
           </p>
 
           <div className="botones">
-            <button className="btn-principal">Conocer servicios</button>
-            <button className="btn-secundario">Ver espacios</button>
+            <a href="#servicios" className="btn-principal">
+              Conocer servicios
+            </a>
+
+            <a href="#galeria" className="btn-secundario">
+              Ver espacios
+            </a>
           </div>
         </div>
       </section>
@@ -174,7 +183,11 @@ function App() {
               <span>contacto@clubresidencial.com</span>
             </a>
 
-            <a href="https://wa.me/51999999999" target="_blank" rel="noreferrer">
+            <a
+              href="https://wa.me/51999999999"
+              target="_blank"
+              rel="noreferrer"
+            >
               <strong>WhatsApp</strong>
               <span>Enviar mensaje</span>
             </a>

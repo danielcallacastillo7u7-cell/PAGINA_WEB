@@ -28,6 +28,14 @@ button {
   min-height: 100vh;
 }
 
+/* Ajuste para navegación interna */
+#inicio,
+#servicios,
+#galeria,
+#contacto {
+  scroll-margin-top: 30px;
+}
+
 .hero {
   min-height: 680px;
   padding: 26px 9%;
@@ -133,6 +141,20 @@ button {
   font-weight: 900;
 }
 
+/* Ahora son <a>, pero siguen viéndose como botones */
+.btn-principal,
+.btn-secundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
 .btn-principal {
   padding: 14px 30px;
   background: #2544a3;
@@ -149,6 +171,15 @@ button {
 .card button:hover,
 .contacto-form button:hover {
   background: #1b327c;
+}
+
+.btn-principal:hover,
+.btn-secundario:hover {
+  transform: translateY(-2px);
+}
+
+.btn-secundario:hover {
+  background: #eef3ff;
 }
 
 .servicios,
@@ -199,7 +230,9 @@ button {
     0 24px 48px rgba(20, 38, 70, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   transform: translateY(0) rotateX(0);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .card:hover {
@@ -472,6 +505,7 @@ button {
     height: 190px;
   }
 }
+
 .btn-login {
   display: inline-flex;
   align-items: center;
@@ -490,4 +524,4 @@ button {
 .btn-login:hover {
   background: #1b327c;
   transform: translateY(-2px);
-} 
+}
