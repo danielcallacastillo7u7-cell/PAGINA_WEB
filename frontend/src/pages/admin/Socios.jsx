@@ -62,13 +62,13 @@ function Socios() {
 
     if (!passwordValida(nuevoSocio.password)) {
       alert(
-        "La contraseÃ±a debe tener mÃ­nimo 8 caracteres, una mayÃºscula, una minÃºscula, un nÃºmero y un sÃ­mbolo."
+        "La contraseña debe tener mí­nimo 8 caracteres, una mayúscula, una minúscula, un número y un sí­mbolo."
       );
       return;
     }
 
     if (nuevoSocio.password !== nuevoSocio.confirmarPassword) {
-      alert("Las contraseÃ±as no coinciden.");
+      alert("Las contraseñas no coinciden.");
       return;
     }
 
@@ -186,7 +186,7 @@ function Socios() {
   }
 
   async function desactivarSocio(id) {
-    const confirmar = confirm("Â¿Seguro que deseas desactivar este socio?");
+    const confirmar = confirm("¿Seguro que deseas desactivar este socio?");
 
     if (!confirmar) return;
 
@@ -209,7 +209,7 @@ function Socios() {
   }
 
   async function activarSocio(id) {
-    const confirmar = confirm("Â¿Seguro que deseas activar este socio?");
+    const confirmar = confirm("¿Seguro que deseas activar este socio?");
 
     if (!confirmar) return;
 
@@ -250,10 +250,10 @@ function Socios() {
       <header className="admin-header">
         <div>
           <span>Panel del Administrador</span>
-          <h1>GestiÃ³n de Socios</h1>
+          <h1>Gestión de Socios</h1>
           <p>
             Registra socios, consulta usuarios guardados y busca por nombre,
-            correo o cÃ³digo.
+            correo o código.
           </p>
         </div>
 
@@ -278,7 +278,7 @@ function Socios() {
         <article className="stat-card alerta">
           <span>Socios inactivos</span>
           <strong>{sociosInactivos}</strong>
-          <small>Requieren revisiÃ³n</small>
+          <small>Requieren revisión</small>
         </article>
 
         <article className="stat-card">
@@ -318,7 +318,7 @@ function Socios() {
             </label>
 
             <label>
-              ContraseÃ±a
+              Contraseña
               <div className="password-campo">
                 <input
                   type={verPassword ? "text" : "password"}
@@ -339,7 +339,7 @@ function Socios() {
             </label>
 
             <label>
-              Confirmar contraseÃ±a
+              Confirmar contraseña
               <div className="password-campo">
                 <input
                   type={verConfirmarPassword ? "text" : "password"}
@@ -362,8 +362,8 @@ function Socios() {
             </label>
 
             <div className="password-ayuda">
-              La contraseÃ±a debe tener mÃ­nimo 8 caracteres, una mayÃºscula, una
-              minÃºscula, un nÃºmero y un sÃ­mbolo.
+              La contraseña debe tener mí­nimo 8 caracteres, una mayúscula, una
+              minúscula, un número y un símbolo.
             </div>
 
             <button type="submit">Guardar socio</button>
@@ -388,7 +388,7 @@ function Socios() {
             </label>
 
             <label>
-              Correo electrÃ³nico
+              Correo electrónico
               <input
                 type="email"
                 name="correo"
@@ -427,8 +427,8 @@ function Socios() {
 
           <div className="historial-lista">
             <div>Registro de socio creado en el sistema</div>
-            <div>Sin historial de pagos real todavÃ­a</div>
-            <div>MÃ¡s adelante aquÃ­ aparecerÃ¡n cuotas, pagos y recibos</div>
+            <div>Sin historial de pagos real todaví­a</div>
+            <div>Más adelante aquí­ aparecerán cuotas, pagos y recibos</div>
           </div>
         </section>
       )}
