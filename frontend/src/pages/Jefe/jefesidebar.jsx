@@ -4,68 +4,123 @@ function JefeSidebar({
   menuAbierto,
   setMenuAbierto,
 }) {
-  function cambiar(nombre) {
+
+  const cambiarSeccion = (nombre) => {
     setSeccion(nombre);
     setMenuAbierto(false);
-  }
+  };
+
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    window.location.href = "/login";
+  };
 
   return (
-    <aside className={`admin-sidebar ${menuAbierto ? "abierto" : ""}`}>
+    <aside
+      className={`admin-sidebar ${
+        menuAbierto ? "activo" : ""
+      }`}
+    >
 
-      <button
-        className="admin-cerrar-menu-btn"
-        onClick={() => setMenuAbierto(false)}
-      >
-        Cerrar
-      </button>
-
-      <div className="sidebar-logo">
-        <h2>ClubCuotas</h2>
-        <span>Panel del jefe</span>
+      <div className="admin-sidebar-logo">
+        <h2>Club Catarindo</h2>
+        <p>Panel del Jefe</p>
       </div>
 
-      <nav className="sidebar-menu">
+      <nav className="admin-sidebar-menu">
 
         <button
-          className={seccion === "dashboard" ? "activo" : ""}
-          onClick={() => cambiar("dashboard")}
+          className={
+            seccion === "dashboard"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            cambiarSeccion("dashboard")
+          }
         >
           Dashboard
         </button>
 
         <button
-          className={seccion === "socios" ? "activo" : ""}
-          onClick={() => cambiar("socios")}
+          className={
+            seccion === "socios"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            cambiarSeccion("socios")
+          }
         >
           Socios
         </button>
 
         <button
-          className={seccion === "pagos" ? "activo" : ""}
-          onClick={() => cambiar("pagos")}
+          className={
+            seccion === "pagos"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            cambiarSeccion("pagos")
+          }
         >
           Pagos
         </button>
 
         <button
-          className={seccion === "cuotas" ? "activo" : ""}
-          onClick={() => cambiar("cuotas")}
+          className={
+            seccion === "cuotas"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            cambiarSeccion("cuotas")
+          }
         >
           Cuotas
         </button>
 
         <button
-          className={seccion === "reportes" ? "activo" : ""}
-          onClick={() => cambiar("reportes")}
+          className={
+            seccion === "reportes"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            cambiarSeccion("reportes")
+          }
         >
           Reportes
         </button>
 
+        <button
+          className={
+            seccion === "importar"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            cambiarSeccion("importar")
+          }
+        >
+          Importar Excel
+        </button>
+
       </nav>
 
-      <a className="cerrar-sesion" href="/">
-        Cerrar sesión
-      </a>
+      <div className="admin-sidebar-footer">
+
+        <button
+          className="btn-cerrar-sesion"
+          onClick={cerrarSesion}
+        >
+          Cerrar sesión
+        </button>
+
+      </div>
 
     </aside>
   );

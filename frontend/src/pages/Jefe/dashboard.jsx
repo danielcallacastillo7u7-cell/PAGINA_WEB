@@ -1,118 +1,559 @@
-import { useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 function Dashboard() {
-  const [datos] = useState({
-    socios: 8,
-    activos: 7,
-    morosos: 1,
-    pendientes: 3,
-    recaudado: 2450,
-  });
+  const [datos, setDatos] =
+    useState(null);
+
+  const [cargando, setCargando] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  const cargarDashboard =
+    useCallback(async () => {
+      try {
+        setError("");
+
+        const respuesta =
+          await fetch(
+            "http://localhost:3000/api/dashboard/resumen"
+          );
+
+        const resultado =
+          await respuesta.json();
+
+        if (!respuesta.ok) {
+          throw new Error(
+            resultado.mensaje ||
+              "No se pudo cargar el dashboard."
+          );
+        }
+
+        setDatos(resultado);
+      } catch (error) {
+        console.error(error);
+
+        setError(
+          "No se pudo obtener la información del servidor."
+        );
+      } finally {
+        setCargando(false);
+      }
+    }, []);
+
+  useEffect(() => {
+    cargarDashboard();
+
+    /*
+      Actualización automática.
+
+      Cada 30 segundos se vuelve
+      a consultar la base de datos.
+    */
+
+    const intervalo = setInterval(
+      cargarDashboard,
+      30000
+    );
+
+    return () =>
+      clearInterval(intervalo);
+
+  }, [cargarDashboard]);
+
+  const dinero = (cantidad) => {
+    return Number(
+      cantidad || 0
+    ).toLocaleString(
+      "es-PE",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }
+    );
+  };
+
+  const fecha = (valor) => {
+    if (!valor) {
+      return "-";
+    }
+
+    return new Date(
+      valor
+    ).toLocaleDateString(
+      "es-PE"
+    );
+  };
+
+  if (cargando) {
+    return (
+      <section className="panel-box">
+        <h2>
+          Cargando dashboard...
+        </h2>
+
+        <p>
+          Consultando información
+          actual del Club Catarindo.
+        </p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="panel-box">
+
+        <h2>
+          No se pudo cargar
+          la información
+        </h2>
+
+        <p>
+          {error}
+        </p>
+
+        <button
+          className="btn-principal"
+          onClick={
+            cargarDashboard
+          }
+        >
+          Intentar nuevamente
+        </button>
+
+      </section>
+    );
+  }
 
   return (
     <>
       <header className="admin-header">
-        <div>
-          <span>Panel del Jefe</span>
 
-          <h1>Dashboard General</h1>
+        <div>
+
+          <span>
+            Club Catarindo
+          </span>
+
+          <h1>
+            Dashboard
+          </h1>
 
           <p>
-            Visualiza el estado general del club, los socios y la recaudación.
+            Resumen actualizado de
+            socios, ingresos y egresos.
           </p>
+
         </div>
 
-        <button onClick={() => window.location.reload()}>
+        <button
+          className="btn-principal"
+          onClick={
+            cargarDashboard
+          }
+        >
           Actualizar
         </button>
+
       </header>
 
-      <section className="dashboard-cards">
-        <article className="dashboard-card">
-          <span>Socios registrados</span>
-          <strong>{datos.socios}</strong>
+
+      {/* ======================
+          SOCIOS
+      ====================== */}
+
+      <section className="stats-grid">
+
+        <article className="stat-card">
+
+          <span>
+            Total de socios
+          </span>
+
+          <strong>
+            {datos?.socios?.total || 0}
+          </strong>
+
+          <small>
+            Registrados
+          </small>
+
         </article>
 
-        <article className="dashboard-card">
-          <span>Socios activos</span>
-          <strong>{datos.activos}</strong>
+
+        <article className="stat-card">
+
+          <span>
+            Socios activos
+          </span>
+
+          <strong>
+            {datos?.socios?.activos || 0}
+          </strong>
+
+          <small>
+            Actualmente activos
+          </small>
+
         </article>
 
-        <article className="dashboard-card">
-          <span>Morosos</span>
-          <strong>{datos.morosos}</strong>
+
+        <article className="stat-card">
+
+          <span>
+            Socios inactivos
+          </span>
+
+          <strong>
+            {datos?.socios?.inactivos || 0}
+          </strong>
+
+          <small>
+            Actualmente inactivos
+          </small>
+
         </article>
 
-        <article className="dashboard-card">
-          <span>Pagos pendientes</span>
-          <strong>{datos.pendientes}</strong>
-        </article>
-
-        <article className="dashboard-card">
-          <span>Recaudado</span>
-          <strong>S/ {Number(datos.recaudado).toFixed(2)}</strong>
-        </article>
       </section>
 
+
+      {/* ======================
+          MES ACTUAL
+      ====================== */}
+
       <section className="panel-box">
-        <h2>Resumen General</h2>
 
-        <div className="socios-lista">
-          <article className="socio-card">
-            <div>
-              <h3>Total de socios</h3>
-              <p>Usuarios registrados en el sistema.</p>
-            </div>
+        <div className="dashboard-section-title">
 
-            <div className="socio-contacto">
-              <strong>{datos.socios}</strong>
-            </div>
-          </article>
+          <div>
 
-          <article className="socio-card">
-            <div>
-              <h3>Socios activos</h3>
-              <p>Socios habilitados para utilizar el club.</p>
-            </div>
+            <h2>
+              Movimiento del mes
+            </h2>
 
-            <div className="socio-contacto">
-              <strong>{datos.activos}</strong>
-            </div>
-          </article>
+            <p>
+              Ingresos y egresos
+              registrados durante
+              el mes actual.
+            </p>
 
-          <article className="socio-card">
-            <div>
-              <h3>Pagos pendientes</h3>
-              <p>Comprobantes esperando aprobación.</p>
-            </div>
+          </div>
 
-            <div className="socio-contacto">
-              <strong>{datos.pendientes}</strong>
-            </div>
-          </article>
-
-          <article className="socio-card">
-            <div>
-              <h3>Morosos</h3>
-              <p>Socios con pagos rechazados o deuda.</p>
-            </div>
-
-            <div className="socio-contacto">
-              <strong>{datos.morosos}</strong>
-            </div>
-          </article>
-
-          <article className="socio-card">
-            <div>
-              <h3>Total recaudado</h3>
-              <p>Monto acumulado de pagos acreditados.</p>
-            </div>
-
-            <div className="socio-contacto">
-              <strong>S/ {Number(datos.recaudado).toFixed(2)}</strong>
-            </div>
-          </article>
         </div>
+
+
+        <div className="stats-grid">
+
+          <article className="stat-card">
+
+            <span>
+              Ingresos
+            </span>
+
+            <strong>
+              S/{" "}
+              {dinero(
+                datos?.mesActual
+                  ?.ingresos
+              )}
+            </strong>
+
+            <small>
+              {
+                datos?.mesActual
+                  ?.cantidadIngresos ||
+                0
+              } movimientos
+            </small>
+
+          </article>
+
+
+          <article className="stat-card">
+
+            <span>
+              Egresos
+            </span>
+
+            <strong>
+              S/{" "}
+              {dinero(
+                datos?.mesActual
+                  ?.egresos
+              )}
+            </strong>
+
+            <small>
+              {
+                datos?.mesActual
+                  ?.cantidadEgresos ||
+                0
+              } movimientos
+            </small>
+
+          </article>
+
+
+          <article className="stat-card">
+
+            <span>
+              Saldo del mes
+            </span>
+
+            <strong>
+              S/{" "}
+              {dinero(
+                datos?.mesActual
+                  ?.saldo
+              )}
+            </strong>
+
+            <small>
+              Ingresos menos egresos
+            </small>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      {/* ======================
+          HISTÓRICO
+      ====================== */}
+
+      <section className="panel-box">
+
+        <h2>
+          Resumen histórico
+        </h2>
+
+        <p>
+          Valores acumulados de todos
+          los registros importados.
+        </p>
+
+
+        <div className="stats-grid">
+
+          <article className="stat-card">
+
+            <span>
+              Total ingresos
+            </span>
+
+            <strong>
+              S/{" "}
+              {dinero(
+                datos?.historico
+                  ?.ingresos
+              )}
+            </strong>
+
+          </article>
+
+
+          <article className="stat-card">
+
+            <span>
+              Total egresos
+            </span>
+
+            <strong>
+              S/{" "}
+              {dinero(
+                datos?.historico
+                  ?.egresos
+              )}
+            </strong>
+
+          </article>
+
+
+          <article className="stat-card">
+
+            <span>
+              Saldo acumulado
+            </span>
+
+            <strong>
+              S/{" "}
+              {dinero(
+                datos?.historico
+                  ?.saldo
+              )}
+            </strong>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      {/* ======================
+          MOVIMIENTOS
+      ====================== */}
+
+      <section className="panel-box">
+
+        <h2>
+          Últimos movimientos
+        </h2>
+
+        <p>
+          Últimos ingresos y egresos
+          registrados.
+        </p>
+
+
+        {datos?.ultimosMovimientos
+          ?.length > 0 ? (
+
+          <div className="tabla-responsive">
+
+            <table className="tabla-admin">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Fecha
+                  </th>
+
+                  <th>
+                    Dirección
+                  </th>
+
+                  <th>
+                    Concepto
+                  </th>
+
+                  <th>
+                    Recibo
+                  </th>
+
+                  <th>
+                    Tipo
+                  </th>
+
+                  <th>
+                    Monto
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                {
+                  datos
+                    .ultimosMovimientos
+                    .map(
+                      (movimiento) => (
+
+                        <tr
+                          key={
+                            movimiento.id
+                          }
+                        >
+
+                          <td>
+                            {fecha(
+                              movimiento.fecha
+                            )}
+                          </td>
+
+                          <td>
+                            {
+                              movimiento.direccion ||
+                              "-"
+                            }
+                          </td>
+
+                          <td>
+                            {
+                              movimiento.concepto
+                            }
+                          </td>
+
+                          <td>
+                            {
+                              movimiento.numero_recibo ||
+                              "-"
+                            }
+                          </td>
+
+                          <td>
+
+                            <span
+                              className={
+                                movimiento.tipo ===
+                                "ingreso"
+                                  ? "estado ingreso"
+                                  : "estado egreso"
+                              }
+                            >
+
+                              {
+                                movimiento.tipo ===
+                                "ingreso"
+                                  ? "Ingreso"
+                                  : "Egreso"
+                              }
+
+                            </span>
+
+                          </td>
+
+                          <td>
+                            <strong>
+                              S/{" "}
+                              {dinero(
+                                movimiento.monto
+                              )}
+                            </strong>
+                          </td>
+
+                        </tr>
+
+                      )
+                    )
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        ) : (
+
+          <div className="estado-vacio">
+
+            <h3>
+              No existen movimientos
+            </h3>
+
+            <p>
+              Cuando importes el Excel
+              aparecerán aquí.
+            </p>
+
+          </div>
+
+        )}
+
       </section>
     </>
   );
