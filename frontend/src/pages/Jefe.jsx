@@ -7,6 +7,7 @@ import Dashboard from "./Jefe/Dashboard.jsx";
 import JefeSidebar from "./Jefe/JefeSidebar.jsx";
 import Pagos from "./Jefe/Pagos.jsx";
 import ImportarExcel from "./Jefe/ImportarExcel.jsx";
+import Cuotas from "./Jefe/Cuotas.jsx";
 
 function Jefe() {
   const [seccion, setSeccion] = useState("dashboard");
@@ -54,15 +55,6 @@ function Jefe() {
           <ImportarExcel />
         )}
 
-        {seccion === "cuotas" && (
-          <section className="panel-box">
-            <h1>Gestión de Cuotas</h1>
-            <p>
-              Aquí se mostrarán las cuotas mensuales de los socios.
-            </p>
-          </section>
-        )}
-
         {seccion === "reportes" && (
           <section className="panel-box">
             <h1>Reportes</h1>
@@ -71,6 +63,7 @@ function Jefe() {
             </p>
           </section>
         )}
+        {seccion === "cuotas" && (<Cuotas />)}
 
       </main>
 

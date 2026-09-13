@@ -1,411 +1,1088 @@
-import { useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+
+const MESES = [
+  "",
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];
 
 function Pagos() {
-  const [pagos, setPagos] = useState([
-    {
-      id: 1,
-      socio: "Juan Pérez",
-      correo: "juan.perez@gmail.com",
-      telefono: "999 111 222",
-      concepto: "Cuota mensual",
-      monto: 180,
-      fecha: "15/08/2026",
-      metodo: "Yape",
-      voucher: "https://placehold.co/600x800?text=Voucher+Juan",
-      estado: "pendiente",
-    },
-    {
-      id: 2,
-      socio: "María López",
-      correo: "maria.lopez@gmail.com",
-      telefono: "999 333 444",
-      concepto: "Cuota mensual",
-      monto: 180,
-      fecha: "16/08/2026",
-      metodo: "Transferencia bancaria",
-      voucher: "https://placehold.co/600x800?text=Voucher+Maria",
-      estado: "pendiente",
-    },
-    {
-      id: 3,
-      socio: "Carlos Ramos",
-      correo: "carlos.ramos@gmail.com",
-      telefono: "999 555 666",
-      concepto: "Cuota mensual",
-      monto: 200,
-      fecha: "16/08/2026",
-      metodo: "Plin",
-      voucher: "https://placehold.co/600x800?text=Voucher+Carlos",
-      estado: "pendiente",
-    },
+  const hoy =
+    new Date()
+      .toISOString()
+      .split("T")[0];
+
+  const [pagos, setPagos] =
+    useState([]);
+
+  const [resumen, setResumen] =
+    useState({
+      total: 0,
+      pendientes: 0,
+      aprobados: 0,
+      rechazados: 0,
+      totalAprobado: 0,
+    });
+
+  const [
+    cuotasPendientes,
+    setCuotasPendientes,
+  ] = useState([]);
+
+  const [estado, setEstado] =
+    useState("");
+
+  const [buscar, setBuscar] =
+    useState("");
+
+  const [cargando, setCargando] =
+    useState(true);
+
+  const [
+    mostrarFormulario,
+    setMostrarFormulario,
+  ] = useState(false);
+
+  const [formulario, setFormulario] =
+    useState({
+      cuotaId: "",
+      monto: "",
+      fechaPago: hoy,
+      metodoPago: "",
+      numeroRecibo: "",
+      referencia: "",
+      observacion: "",
+    });
+
+
+  const dinero =
+    (valor) =>
+      Number(
+        valor || 0
+      ).toLocaleString(
+        "es-PE",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }
+      );
+
+
+  const fecha =
+    (valor) => {
+      if (!valor) return "-";
+
+      return new Date(
+        valor
+      ).toLocaleDateString(
+        "es-PE"
+      );
+    };
+
+
+  const cargarPagos =
+    useCallback(
+      async () => {
+        try {
+          setCargando(true);
+
+          const parametros =
+            new URLSearchParams();
+
+          if (estado) {
+            parametros.append(
+              "estado",
+              estado
+            );
+          }
+
+          if (buscar.trim()) {
+            parametros.append(
+              "buscar",
+              buscar.trim()
+            );
+          }
+
+          const respuesta =
+            await fetch(
+              `http://localhost:3000/api/pagos?${parametros.toString()}`
+            );
+
+          const datos =
+            await respuesta.json();
+
+          if (!respuesta.ok) {
+            throw new Error(
+              datos.mensaje
+            );
+          }
+
+          setPagos(datos);
+
+        } catch (error) {
+          console.error(
+            "Error pagos:",
+            error
+          );
+
+        } finally {
+          setCargando(false);
+        }
+      },
+      [
+        estado,
+        buscar,
+      ]
+    );
+
+
+  const cargarResumen =
+    async () => {
+      try {
+        const respuesta =
+          await fetch(
+            "http://localhost:3000/api/pagos/resumen"
+          );
+
+        const datos =
+          await respuesta.json();
+
+        if (respuesta.ok) {
+          setResumen(datos);
+        }
+
+      } catch (error) {
+        console.error(
+          "Error resumen:",
+          error
+        );
+      }
+    };
+
+
+  const cargarCuotasPendientes =
+    async () => {
+      try {
+        const respuesta =
+          await fetch(
+            "http://localhost:3000/api/pagos/cuotas-pendientes"
+          );
+
+        const datos =
+          await respuesta.json();
+
+        if (respuesta.ok) {
+          setCuotasPendientes(
+            datos
+          );
+        }
+
+      } catch (error) {
+        console.error(
+          "Error cuotas:",
+          error
+        );
+      }
+    };
+
+
+  useEffect(() => {
+    const temporizador =
+      setTimeout(
+        cargarPagos,
+        300
+      );
+
+    return () =>
+      clearTimeout(
+        temporizador
+      );
+
+  }, [
+    cargarPagos,
   ]);
 
-  const [pagoSeleccionado, setPagoSeleccionado] = useState(null);
-  const [motivoRechazo, setMotivoRechazo] = useState("");
-  const [mostrarRechazo, setMostrarRechazo] = useState(false);
 
-  const pagosPendientes = pagos.filter(
-    (pago) => pago.estado === "pendiente"
-  );
+  useEffect(() => {
+    cargarResumen();
+    cargarCuotasPendientes();
+  }, []);
 
-  const pagosAprobados = pagos.filter(
-    (pago) => pago.estado === "acreditado"
-  );
 
-  const pagosRechazados = pagos.filter(
-    (pago) => pago.estado === "rechazado"
-  );
+  const seleccionarCuota =
+    (e) => {
+      const cuotaId =
+        e.target.value;
 
-  function aprobarPago(id) {
-    setPagos((actuales) =>
-      actuales.map((pago) =>
-        pago.id === id
-          ? {
-              ...pago,
-              estado: "acreditado",
-            }
-          : pago
-      )
-    );
+      const cuota =
+        cuotasPendientes.find(
+          (item) =>
+            String(item.id) ===
+            String(cuotaId)
+        );
 
-    setPagoSeleccionado(null);
+      setFormulario(
+        (anterior) => ({
+          ...anterior,
 
-    alert("Pago aprobado correctamente.");
-  }
+          cuotaId,
 
-  function abrirRechazo(pago) {
-    setPagoSeleccionado(pago);
-    setMotivoRechazo("");
-    setMostrarRechazo(true);
-  }
-
-  function rechazarPago() {
-    if (!motivoRechazo.trim()) {
-      alert("Debes indicar el motivo del rechazo.");
-      return;
-    }
-
-    setPagos((actuales) =>
-      actuales.map((pago) =>
-        pago.id === pagoSeleccionado.id
-          ? {
-              ...pago,
-              estado: "rechazado",
-              motivoRechazo,
-            }
-          : pago
-      )
-    );
-
-    setMostrarRechazo(false);
-    setPagoSeleccionado(null);
-    setMotivoRechazo("");
-
-    alert("Pago rechazado correctamente.");
-  }
-
-  function enviarComprobante(tipo) {
-    if (!pagoSeleccionado) return;
-
-    if (tipo === "correo") {
-      alert(
-        `Comprobante enviado al correo ${pagoSeleccionado.correo}`
+          monto:
+            cuota
+              ? cuota.monto
+              : "",
+        })
       );
-    }
+    };
 
-    if (tipo === "telefono") {
-      alert(
-        `Comprobante enviado al número ${pagoSeleccionado.telefono}`
-      );
-    }
-  }
+
+  const registrarPago =
+    async (e) => {
+      e.preventDefault();
+
+      if (
+        !formulario.cuotaId ||
+        !formulario.monto ||
+        !formulario.fechaPago ||
+        !formulario.metodoPago
+      ) {
+        alert(
+          "Completa los campos obligatorios."
+        );
+
+        return;
+      }
+
+      try {
+        const respuesta =
+          await fetch(
+            "http://localhost:3000/api/pagos",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+
+              body:
+                JSON.stringify(
+                  formulario
+                ),
+            }
+          );
+
+        const datos =
+          await respuesta.json();
+
+        if (!respuesta.ok) {
+          alert(
+            datos.mensaje ||
+              "No se pudo registrar."
+          );
+
+          return;
+        }
+
+        alert(
+          datos.mensaje
+        );
+
+        setFormulario({
+          cuotaId: "",
+          monto: "",
+          fechaPago: hoy,
+          metodoPago: "",
+          numeroRecibo: "",
+          referencia: "",
+          observacion: "",
+        });
+
+        setMostrarFormulario(
+          false
+        );
+
+        await Promise.all([
+          cargarPagos(),
+          cargarResumen(),
+          cargarCuotasPendientes(),
+        ]);
+
+      } catch (error) {
+        console.error(error);
+
+        alert(
+          "No se pudo conectar con el servidor."
+        );
+      }
+    };
+
+
+  const aprobarPago =
+    async (pago) => {
+      const confirmar =
+        window.confirm(
+          `¿Aprobar el pago de ${pago.nombre} por S/ ${dinero(pago.monto)}?`
+        );
+
+      if (!confirmar) {
+        return;
+      }
+
+      try {
+        const respuesta =
+          await fetch(
+            `http://localhost:3000/api/pagos/${pago.id}/aprobar`,
+            {
+              method:
+                "PATCH",
+            }
+          );
+
+        const datos =
+          await respuesta.json();
+
+        if (!respuesta.ok) {
+          alert(
+            datos.mensaje
+          );
+
+          return;
+        }
+
+        alert(
+          datos.mensaje
+        );
+
+        await Promise.all([
+          cargarPagos(),
+          cargarResumen(),
+          cargarCuotasPendientes(),
+        ]);
+
+      } catch (error) {
+        console.error(error);
+
+        alert(
+          "No se pudo aprobar el pago."
+        );
+      }
+    };
+
+
+  const rechazarPago =
+    async (pago) => {
+      const motivo =
+        window.prompt(
+          "Motivo del rechazo:"
+        );
+
+      if (motivo === null) {
+        return;
+      }
+
+      try {
+        const respuesta =
+          await fetch(
+            `http://localhost:3000/api/pagos/${pago.id}/rechazar`,
+            {
+              method:
+                "PATCH",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+
+              body:
+                JSON.stringify({
+                  observacion:
+                    motivo,
+                }),
+            }
+          );
+
+        const datos =
+          await respuesta.json();
+
+        if (!respuesta.ok) {
+          alert(
+            datos.mensaje
+          );
+
+          return;
+        }
+
+        await Promise.all([
+          cargarPagos(),
+          cargarResumen(),
+          cargarCuotasPendientes(),
+        ]);
+
+      } catch (error) {
+        console.error(error);
+
+        alert(
+          "No se pudo rechazar."
+        );
+      }
+    };
+
 
   return (
-    <div>
+    <>
       <header className="admin-header">
+
         <div>
-          <span>Panel del Jefe</span>
-          <h1>Validación de pagos</h1>
+          <span>
+            Club Catarindo
+          </span>
+
+          <h1>
+            Gestión de Pagos
+          </h1>
+
           <p>
-            Revisa y valida los comprobantes enviados por los socios.
+            Registro y validación de
+            pagos correspondientes a
+            cuotas de socios.
           </p>
         </div>
+
+
+        <button
+          className="btn-principal"
+          onClick={() =>
+            setMostrarFormulario(
+              !mostrarFormulario
+            )
+          }
+        >
+          {mostrarFormulario
+            ? "Cancelar"
+            : "+ Registrar pago"}
+        </button>
+
       </header>
 
-      <section className="dashboard-cards">
 
-        <article className="dashboard-card">
-          <span>Pendientes</span>
-          <strong>{pagosPendientes.length}</strong>
+      <section className="stats-grid">
+
+        <article className="stat-card">
+
+          <span>
+            Pagos registrados
+          </span>
+
+          <strong>
+            {resumen.total}
+          </strong>
+
         </article>
 
-        <article className="dashboard-card">
-          <span>Aprobados</span>
-          <strong>{pagosAprobados.length}</strong>
+
+        <article className="stat-card alerta">
+
+          <span>
+            Pendientes
+          </span>
+
+          <strong>
+            {resumen.pendientes}
+          </strong>
+
+          <small>
+            Por revisar
+          </small>
+
         </article>
 
-        <article className="dashboard-card">
-          <span>Rechazados</span>
-          <strong>{pagosRechazados.length}</strong>
+
+        <article className="stat-card ok">
+
+          <span>
+            Aprobados
+          </span>
+
+          <strong>
+            {resumen.aprobados}
+          </strong>
+
+          <small>
+            Pagos validados
+          </small>
+
+        </article>
+
+
+        <article className="stat-card">
+
+          <span>
+            Total cobrado
+          </span>
+
+          <strong>
+            S/{" "}
+            {dinero(
+              resumen.totalAprobado
+            )}
+          </strong>
+
         </article>
 
       </section>
 
+
+      {mostrarFormulario && (
+        <section className="panel-box">
+
+          <h2>
+            Registrar nuevo pago
+          </h2>
+
+          <p>
+            Selecciona primero la cuota
+            correspondiente al socio.
+          </p>
+
+
+          <form
+            className="pago-formulario"
+            onSubmit={
+              registrarPago
+            }
+          >
+
+            <div className="campo-formulario">
+
+              <label>
+                Cuota *
+              </label>
+
+              <select
+                value={
+                  formulario.cuotaId
+                }
+                onChange={
+                  seleccionarCuota
+                }
+              >
+
+                <option value="">
+                  Seleccionar cuota
+                </option>
+
+                {cuotasPendientes.map(
+                  (cuota) => (
+
+                    <option
+                      key={
+                        cuota.id
+                      }
+                      value={
+                        cuota.id
+                      }
+                    >
+
+                      {cuota.nombre}
+                      {" - "}
+                      {cuota.zona}
+                      -
+                      {cuota.lote}
+                      {" - "}
+                      {
+                        MESES[
+                          cuota.mes
+                        ]
+                      }
+                      {" "}
+                      {cuota.anio}
+                      {" - S/ "}
+                      {dinero(
+                        cuota.monto
+                      )}
+
+                    </option>
+
+                  )
+                )}
+
+              </select>
+
+            </div>
+
+
+            <div className="campo-formulario">
+
+              <label>
+                Monto *
+              </label>
+
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={
+                  formulario.monto
+                }
+                onChange={(e) =>
+                  setFormulario({
+                    ...formulario,
+
+                    monto:
+                      e.target.value,
+                  })
+                }
+              />
+
+            </div>
+
+
+            <div className="campo-formulario">
+
+              <label>
+                Fecha de pago *
+              </label>
+
+              <input
+                type="date"
+                value={
+                  formulario.fechaPago
+                }
+                onChange={(e) =>
+                  setFormulario({
+                    ...formulario,
+
+                    fechaPago:
+                      e.target.value,
+                  })
+                }
+              />
+
+            </div>
+
+
+            <div className="campo-formulario">
+
+              <label>
+                Método de pago *
+              </label>
+
+              <select
+                value={
+                  formulario.metodoPago
+                }
+                onChange={(e) =>
+                  setFormulario({
+                    ...formulario,
+
+                    metodoPago:
+                      e.target.value,
+                  })
+                }
+              >
+
+                <option value="">
+                  Seleccionar
+                </option>
+
+                <option value="Efectivo">
+                  Efectivo
+                </option>
+
+                <option value="Yape">
+                  Yape
+                </option>
+
+                <option value="Plin">
+                  Plin
+                </option>
+
+                <option value="Transferencia bancaria">
+                  Transferencia bancaria
+                </option>
+
+                <option value="Depósito">
+                  Depósito
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div className="campo-formulario">
+
+              <label>
+                N.º de recibo
+              </label>
+
+              <input
+                type="text"
+                value={
+                  formulario.numeroRecibo
+                }
+                onChange={(e) =>
+                  setFormulario({
+                    ...formulario,
+
+                    numeroRecibo:
+                      e.target.value,
+                  })
+                }
+                placeholder="Ej. 2510"
+              />
+
+            </div>
+
+
+            <div className="campo-formulario">
+
+              <label>
+                Referencia
+              </label>
+
+              <input
+                type="text"
+                value={
+                  formulario.referencia
+                }
+                onChange={(e) =>
+                  setFormulario({
+                    ...formulario,
+
+                    referencia:
+                      e.target.value,
+                  })
+                }
+                placeholder="Código de operación"
+              />
+
+            </div>
+
+
+            <div className="campo-formulario campo-completo">
+
+              <label>
+                Observación
+              </label>
+
+              <textarea
+                value={
+                  formulario.observacion
+                }
+                onChange={(e) =>
+                  setFormulario({
+                    ...formulario,
+
+                    observacion:
+                      e.target.value,
+                  })
+                }
+                placeholder="Información adicional..."
+              />
+
+            </div>
+
+
+            <div className="campo-completo">
+
+              <button
+                className="btn-principal"
+                type="submit"
+              >
+                Registrar pago
+              </button>
+
+            </div>
+
+          </form>
+
+        </section>
+      )}
+
+
       <section className="panel-box">
 
-        <div className="panel-box-header">
-          <div>
-            <h2>Pagos pendientes</h2>
-            <p>
-              Comprobantes que necesitan ser revisados.
-            </p>
-          </div>
+        <div className="pagos-filtros">
+
+          <input
+            type="text"
+            value={buscar}
+            onChange={(e) =>
+              setBuscar(
+                e.target.value
+              )
+            }
+            placeholder="Buscar socio, lote o recibo..."
+          />
+
+
+          <select
+            value={estado}
+            onChange={(e) =>
+              setEstado(
+                e.target.value
+              )
+            }
+          >
+
+            <option value="">
+              Todos los estados
+            </option>
+
+            <option value="pendiente">
+              Pendientes
+            </option>
+
+            <option value="aprobado">
+              Aprobados
+            </option>
+
+            <option value="rechazado">
+              Rechazados
+            </option>
+
+          </select>
+
         </div>
 
-        {pagosPendientes.length === 0 ? (
+
+        {cargando ? (
+
           <div className="estado-vacio">
-            <strong>No hay pagos pendientes</strong>
-            <p>
-              Todos los comprobantes han sido revisados.
-            </p>
+            <h3>
+              Cargando pagos...
+            </h3>
           </div>
+
+        ) : pagos.length === 0 ? (
+
+          <div className="estado-vacio">
+
+            <h3>
+              No existen pagos
+            </h3>
+
+            <p>
+              Los pagos registrados
+              aparecerán aquí.
+            </p>
+
+          </div>
+
         ) : (
-          <div className="pagos-lista">
 
-            {pagosPendientes.map((pago) => (
-              <article className="pago-card" key={pago.id}>
+          <div className="tabla-responsive">
 
-                <div className="pago-informacion">
+            <table className="tabla-admin">
 
-                  <div>
-                    <span>Socio</span>
-                    <strong>{pago.socio}</strong>
-                  </div>
+              <thead>
 
-                  <div>
-                    <span>Concepto</span>
-                    <strong>{pago.concepto}</strong>
-                  </div>
+                <tr>
+                  <th>
+                    Fecha
+                  </th>
 
-                  <div>
-                    <span>Monto</span>
-                    <strong>
-                      S/ {pago.monto.toFixed(2)}
-                    </strong>
-                  </div>
+                  <th>
+                    Socio
+                  </th>
 
-                  <div>
-                    <span>Fecha</span>
-                    <strong>{pago.fecha}</strong>
-                  </div>
+                  <th>
+                    Cuota
+                  </th>
 
-                  <div>
-                    <span>Método</span>
-                    <strong>{pago.metodo}</strong>
-                  </div>
+                  <th>
+                    Método
+                  </th>
 
-                </div>
+                  <th>
+                    Recibo
+                  </th>
 
-                <div className="pago-acciones">
+                  <th>
+                    Monto
+                  </th>
 
-                  <button
-                    onClick={() =>
-                      setPagoSeleccionado(pago)
-                    }
-                  >
-                    Ver voucher
-                  </button>
+                  <th>
+                    Estado
+                  </th>
 
-                  <button
-                    className="btn-aprobar"
-                    onClick={() =>
-                      aprobarPago(pago.id)
-                    }
-                  >
-                    ✓ Aprobar
-                  </button>
+                  <th>
+                    Acciones
+                  </th>
+                </tr>
 
-                  <button
-                    className="btn-rechazar"
-                    onClick={() =>
-                      abrirRechazo(pago)
-                    }
-                  >
-                    ✕ Rechazar
-                  </button>
+              </thead>
 
-                </div>
 
-              </article>
-            ))}
+              <tbody>
+
+                {pagos.map(
+                  (pago) => (
+
+                    <tr
+                      key={
+                        pago.id
+                      }
+                    >
+
+                      <td>
+                        {fecha(
+                          pago.fecha_pago
+                        )}
+                      </td>
+
+
+                      <td>
+
+                        <strong>
+                          {pago.nombre}
+                        </strong>
+
+                        <small
+                          style={{
+                            display:
+                              "block",
+                          }}
+                        >
+                          {pago.zona}
+                          -
+                          {pago.lote}
+                        </small>
+
+                      </td>
+
+
+                      <td>
+
+                        {
+                          MESES[
+                            pago.mes
+                          ]
+                        }
+                        {" "}
+                        {pago.anio}
+
+                      </td>
+
+
+                      <td>
+                        {
+                          pago.metodo_pago
+                        }
+                      </td>
+
+
+                      <td>
+                        {
+                          pago.numero_recibo ||
+                          "-"
+                        }
+                      </td>
+
+
+                      <td>
+
+                        <strong>
+                          S/{" "}
+                          {dinero(
+                            pago.monto
+                          )}
+                        </strong>
+
+                      </td>
+
+
+                      <td>
+
+                        <span
+                          className={`estado-pago ${pago.estado}`}
+                        >
+
+                          {pago.estado ===
+                          "aprobado"
+                            ? "Aprobado"
+                            : pago.estado ===
+                              "rechazado"
+                            ? "Rechazado"
+                            : "Pendiente"}
+
+                        </span>
+
+                      </td>
+
+
+                      <td>
+
+                        {pago.estado ===
+                          "pendiente" ? (
+
+                          <div className="acciones-tabla">
+
+                            <button
+                              className="btn-tabla exito"
+                              onClick={() =>
+                                aprobarPago(
+                                  pago
+                                )
+                              }
+                            >
+                              Aprobar
+                            </button>
+
+
+                            <button
+                              className="btn-tabla peligro"
+                              onClick={() =>
+                                rechazarPago(
+                                  pago
+                                )
+                              }
+                            >
+                              Rechazar
+                            </button>
+
+                          </div>
+
+                        ) : (
+
+                          <span>
+                            Revisado
+                          </span>
+
+                        )}
+
+                      </td>
+
+                    </tr>
+
+                  )
+                )}
+
+              </tbody>
+
+            </table>
 
           </div>
         )}
 
       </section>
-
-      {pagoSeleccionado && !mostrarRechazo && (
-        <div className="modal-fondo">
-
-          <div className="modal-contenido">
-
-            <button
-              className="modal-cerrar"
-              onClick={() =>
-                setPagoSeleccionado(null)
-              }
-            >
-              ×
-            </button>
-
-            <span>Comprobante de pago</span>
-
-            <h2>{pagoSeleccionado.socio}</h2>
-
-            <div className="voucher-informacion">
-
-              <p>
-                <strong>Concepto:</strong>{" "}
-                {pagoSeleccionado.concepto}
-              </p>
-
-              <p>
-                <strong>Monto:</strong>{" "}
-                S/ {pagoSeleccionado.monto.toFixed(2)}
-              </p>
-
-              <p>
-                <strong>Fecha:</strong>{" "}
-                {pagoSeleccionado.fecha}
-              </p>
-
-              <p>
-                <strong>Método:</strong>{" "}
-                {pagoSeleccionado.metodo}
-              </p>
-
-            </div>
-
-            <img
-              className="voucher-imagen"
-              src={pagoSeleccionado.voucher}
-              alt="Comprobante de pago"
-            />
-
-            <div className="modal-acciones">
-
-              <button
-                className="btn-aprobar"
-                onClick={() =>
-                  aprobarPago(pagoSeleccionado.id)
-                }
-              >
-                ✓ Aprobar pago
-              </button>
-
-              <button
-                className="btn-rechazar"
-                onClick={() =>
-                  abrirRechazo(pagoSeleccionado)
-                }
-              >
-                ✕ Rechazar pago
-              </button>
-
-            </div>
-
-            <hr />
-
-            <h3>Enviar comprobante</h3>
-
-            <p>
-              El comprobante puede ser enviado al socio
-              mediante sus datos registrados.
-            </p>
-
-            <div className="envio-comprobante">
-
-              <button
-                onClick={() =>
-                  enviarComprobante("correo")
-                }
-              >
-                📧 Enviar por correo
-              </button>
-
-              <button
-                onClick={() =>
-                  enviarComprobante("telefono")
-                }
-              >
-                📱 Enviar al teléfono
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-      )}
-
-      {mostrarRechazo && pagoSeleccionado && (
-        <div className="modal-fondo">
-
-          <div className="modal-contenido">
-
-            <button
-              className="modal-cerrar"
-              onClick={() =>
-                setMostrarRechazo(false)
-              }
-            >
-              ×
-            </button>
-
-            <span>Rechazar comprobante</span>
-
-            <h2>{pagoSeleccionado.socio}</h2>
-
-            <p>
-              Indica el motivo por el cual el comprobante
-              no puede ser aprobado.
-            </p>
-
-            <textarea
-              className="motivo-rechazo"
-              placeholder="Ejemplo: El monto del comprobante no coincide con la cuota registrada."
-              value={motivoRechazo}
-              onChange={(e) =>
-                setMotivoRechazo(e.target.value)
-              }
-              rows="5"
-            />
-
-            <div className="modal-acciones">
-
-              <button
-                onClick={() =>
-                  setMostrarRechazo(false)
-                }
-              >
-                Cancelar
-              </button>
-
-              <button
-                className="btn-rechazar"
-                onClick={rechazarPago}
-              >
-                Confirmar rechazo
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-      )}
-
-    </div>
+    </>
   );
 }
 

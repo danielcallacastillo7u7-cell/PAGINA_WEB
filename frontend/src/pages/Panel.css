@@ -942,3 +942,329 @@ button {
   color:
     #64748b;
 }
+/* ==========================================
+   SOCIOS
+========================================== */
+
+.socios-filtros {
+  display: grid;
+  grid-template-columns:
+    minmax(250px, 1fr)
+    180px
+    180px;
+
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.socios-filtros input,
+.socios-filtros select {
+  width: 100%;
+  padding: 11px 12px;
+
+  border:
+    1px solid #cbd5e1;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  font-size: 14px;
+
+  outline: none;
+}
+
+.socios-filtros input:focus,
+.socios-filtros select:focus {
+  border-color: #2563eb;
+}
+
+
+/* ACCIONES */
+
+.acciones-tabla {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.btn-tabla {
+  border:
+    1px solid #cbd5e1;
+
+  background:
+    #ffffff;
+
+  color:
+    #334155;
+
+  padding:
+    7px 11px;
+
+  border-radius:
+    7px;
+
+  cursor:
+    pointer;
+
+  font-size:
+    13px;
+
+  font-weight:
+    600;
+}
+
+.btn-tabla:hover {
+  background:
+    #f1f5f9;
+}
+
+.btn-tabla.peligro {
+  color:
+    #b91c1c;
+
+  border-color:
+    #fecaca;
+}
+
+.btn-tabla.peligro:hover {
+  background:
+    #fef2f2;
+}
+
+.btn-tabla.exito {
+  color:
+    #15803d;
+
+  border-color:
+    #bbf7d0;
+}
+
+.btn-tabla.exito:hover {
+  background:
+    #f0fdf4;
+}
+
+
+/* DETALLE */
+
+.detalle-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(180px, 1fr)
+    );
+
+  gap: 15px;
+
+  margin-top: 20px;
+}
+
+.detalle-item {
+  padding: 16px;
+
+  background:
+    #f8fafc;
+
+  border:
+    1px solid #e2e8f0;
+
+  border-radius:
+    10px;
+}
+
+.detalle-item span {
+  display: block;
+
+  margin-bottom:
+    6px;
+
+  color:
+    #64748b;
+
+  font-size:
+    13px;
+}
+
+.detalle-item strong {
+  color:
+    #0f172a;
+}
+
+
+/* MENSAJE ERROR */
+
+.mensaje-error {
+  background:
+    #fef2f2;
+
+  color:
+    #991b1b;
+
+  border:
+    1px solid #fecaca;
+
+  border-radius:
+    8px;
+
+  padding:
+    12px 15px;
+
+  margin-bottom:
+    18px;
+}
+
+
+@media (
+  max-width: 800px
+) {
+  .socios-filtros {
+    grid-template-columns:
+      1fr;
+  }
+}
+/* ========================================
+   CUOTAS
+======================================== */
+
+.cuotas-filtros {
+  display: grid;
+  grid-template-columns:
+    120px
+    160px
+    150px
+    160px
+    minmax(220px, 1fr);
+
+  gap: 12px;
+
+  margin-top: 20px;
+}
+
+.cuotas-filtros input,
+.cuotas-filtros select {
+  width: 100%;
+
+  padding:
+    11px 12px;
+
+  border:
+    1px solid #cbd5e1;
+
+  border-radius:
+    8px;
+
+  background:
+    #ffffff;
+
+  color:
+    #334155;
+
+  outline:
+    none;
+}
+
+.cuotas-filtros input:focus,
+.cuotas-filtros select:focus {
+  border-color:
+    #2563eb;
+}
+
+
+/* ESTADOS CUOTAS */
+
+.estado-cuota {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    5px 10px;
+
+  border-radius:
+    20px;
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+}
+
+.estado-cuota.pagado {
+  background:
+    #dcfce7;
+
+  color:
+    #166534;
+}
+
+.estado-cuota.pendiente {
+  background:
+    #fef3c7;
+
+  color:
+    #92400e;
+}
+
+.estado-cuota.vencido {
+  background:
+    #fee2e2;
+
+  color:
+    #991b1b;
+}
+
+
+.panel-titulo-fila {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    15px;
+
+  margin-bottom:
+    15px;
+}
+
+
+@media (
+  max-width: 1050px
+) {
+
+  .cuotas-filtros {
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+  }
+
+}
+
+
+@media (
+  max-width: 600px
+) {
+
+  .cuotas-filtros {
+    grid-template-columns:
+      1fr;
+  }
+
+}
