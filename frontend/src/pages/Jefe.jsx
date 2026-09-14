@@ -8,6 +8,8 @@ import JefeSidebar from "./Jefe/JefeSidebar.jsx";
 import Pagos from "./Jefe/Pagos.jsx";
 import ImportarExcel from "./Jefe/ImportarExcel.jsx";
 import Cuotas from "./Jefe/Cuotas.jsx";
+import Finanzas from "./Jefe/Finanzas.jsx";
+import Reportes from "./Jefe/Reportes.jsx";
 
 function Jefe() {
   const [seccion, setSeccion] = useState("dashboard");
@@ -47,23 +49,25 @@ function Jefe() {
           <Socios />
         )}
 
+        {seccion === "cuotas" && (
+          <Cuotas />
+        )}
+
         {seccion === "pagos" && (
           <Pagos />
+        )}
+
+        {seccion === "finanzas" && (
+          <Finanzas />
+        )}
+
+        {seccion === "reportes" && (
+          <Reportes />
         )}
 
         {seccion === "importar" && (
           <ImportarExcel />
         )}
-
-        {seccion === "reportes" && (
-          <section className="panel-box">
-            <h1>Reportes</h1>
-            <p>
-              Aquí se mostrarán los reportes financieros del Club Catarindo.
-            </p>
-          </section>
-        )}
-        {seccion === "cuotas" && (<Cuotas />)}
 
       </main>
 

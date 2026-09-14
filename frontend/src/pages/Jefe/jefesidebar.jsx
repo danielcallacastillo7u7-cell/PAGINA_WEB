@@ -19,9 +19,7 @@ function JefeSidebar({
 
   return (
     <aside
-      className={`admin-sidebar ${
-        menuAbierto ? "activo" : ""
-      }`}
+      className={`admin-sidebar ${menuAbierto ? "activo" : ""}`}
     >
 
       <div className="admin-sidebar-logo">
@@ -59,6 +57,19 @@ function JefeSidebar({
 
         <button
           className={
+            seccion === "cuotas"
+              ? "activo"
+              : ""
+          }
+          onClick={() =>
+            cambiarSeccion("cuotas")
+          }
+        >
+          Cuotas
+        </button>
+
+        <button
+          className={
             seccion === "pagos"
               ? "activo"
               : ""
@@ -72,15 +83,15 @@ function JefeSidebar({
 
         <button
           className={
-            seccion === "cuotas"
+            seccion === "finanzas"
               ? "activo"
               : ""
           }
           onClick={() =>
-            cambiarSeccion("cuotas")
+            cambiarSeccion("finanzas")
           }
         >
-          Cuotas
+          Ingresos y Egresos
         </button>
 
         <button
@@ -106,7 +117,7 @@ function JefeSidebar({
             cambiarSeccion("importar")
           }
         >
-          Importar Excel
+          Migrar datos históricos
         </button>
 
       </nav>

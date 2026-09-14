@@ -1268,3 +1268,138 @@ button {
   }
 
 }
+
+/* =========================================
+   FINANZAS
+========================================= */
+
+.finanzas-filtros {
+  display: grid;
+
+  grid-template-columns:
+    120px
+    160px
+    160px
+    minmax(220px, 1fr);
+
+  gap: 12px;
+
+  margin-bottom: 25px;
+}
+
+.finanzas-filtros input,
+.finanzas-filtros select {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 11px 12px;
+
+  border:
+    1px solid #cbd5e1;
+
+  border-radius: 8px;
+
+  background: white;
+  color: #334155;
+
+  outline: none;
+}
+
+
+.tipo-movimiento {
+  display: flex;
+
+  gap: 10px;
+
+  margin:
+    20px 0;
+}
+
+
+.tipo-btn {
+  border: 1px solid #cbd5e1;
+
+  background: white;
+
+  padding:
+    10px 20px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-weight: 600;
+}
+
+
+.tipo-btn.activo {
+  background: #dcfce7;
+
+  border-color: #16a34a;
+
+  color: #166534;
+}
+
+
+.tipo-btn.activo.egreso {
+  background: #fee2e2;
+
+  border-color: #dc2626;
+
+  color: #991b1b;
+}
+
+
+.movimiento-tipo {
+  display: inline-flex;
+
+  padding:
+    5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+
+.movimiento-tipo.ingreso {
+  background: #dcfce7;
+
+  color: #166534;
+}
+
+
+.movimiento-tipo.egreso {
+  background: #fee2e2;
+
+  color: #991b1b;
+}
+
+
+@media (
+  max-width: 900px
+) {
+
+  .finanzas-filtros {
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+  }
+
+}
+
+
+@media (
+  max-width: 600px
+) {
+
+  .finanzas-filtros {
+    grid-template-columns:
+      1fr;
+  }
+
+}
