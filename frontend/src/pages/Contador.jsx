@@ -1,76 +1,109 @@
+import { useState } from "react";
 import "./Panel.css";
+import Dashboard from "./Jefe/dashboard.jsx";
+import Cuotas from "./Jefe/Cuotas.jsx";
+import Pagos from "./Jefe/Pagos.jsx";
+import Finanzas from "./Jefe/Finanzas.jsx";
+import Reportes from "./Jefe/Reportes.jsx";
+
+function ContadorSidebar({ seccion, setSeccion, menuAbierto, setMenuAbierto }) {
+  function cambiarSeccion(nombre) {
+    setSeccion(nombre);
+    setMenuAbierto(false);
+  }
+
+  function cerrarSesion() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.href = "/login";
+  }
+
+  return (
+    <aside className={`admin-sidebar ${menuAbierto ? "activo" : ""}`}>
+      <div className="admin-sidebar-logo">
+        <h2>Club Catarindo</h2>
+        <p>Panel del Contador</p>
+      </div>
+
+      <nav className="admin-sidebar-menu">
+        <button
+          className={seccion === "dashboard" ? "activo" : ""}
+          onClick={() => cambiarSeccion("dashboard")}
+        >
+          Dashboard
+        </button>
+
+        <button
+          className={seccion === "cuotas" ? "activo" : ""}
+          onClick={() => cambiarSeccion("cuotas")}
+        >
+          Cuotas
+        </button>
+
+        <button
+          className={seccion === "pagos" ? "activo" : ""}
+          onClick={() => cambiarSeccion("pagos")}
+        >
+          Pagos
+        </button>
+
+        <button
+          className={seccion === "finanzas" ? "activo" : ""}
+          onClick={() => cambiarSeccion("finanzas")}
+        >
+          Ingresos y Egresos
+        </button>
+
+        <button
+          className={seccion === "reportes" ? "activo" : ""}
+          onClick={() => cambiarSeccion("reportes")}
+        >
+          Reportes
+        </button>
+      </nav>
+
+      <div className="admin-sidebar-footer">
+        <button className="btn-cerrar-sesion" onClick={cerrarSesion}>
+          Cerrar sesion
+        </button>
+      </div>
+    </aside>
+  );
+}
 
 function Contador() {
+  const [seccion, setSeccion] = useState("dashboard");
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
   return (
-    <div className="panel">
-      <aside className="sidebar">
-        <h2>Club Residencial</h2>
-        <nav>
-          <a href="#">Inicio</a>
-          <a href="#">Pagos</a>
-          <a href="#">Ingresos</a>
-          <a href="#">Deudas</a>
-          <a href="#">Reportes</a>
-        </nav>
-        <a className="salir" href="/">Cerrar sesión</a>
-      </aside>
+    <div className="admin-layout">
+      <button
+        className="admin-menu-mobile-btn"
+        onClick={() => setMenuAbierto(true)}
+      >
+        Menu
+      </button>
 
-      <main className="panel-main">
-        <header className="panel-header">
-          <div>
-            <span>Panel contable</span>
-            <h1>Gestión de pagos</h1>
-          </div>
-          <button>Registrar pago</button>
-        </header>
+      {menuAbierto && (
+        <div
+          className="admin-sidebar-overlay"
+          onClick={() => setMenuAbierto(false)}
+        />
+      )}
 
-        <section className="resumen">
-          <div className="resumen-card">
-            <span>Ingresos del mes</span>
-            <strong>S/ 18,450</strong>
-          </div>
-          <div className="resumen-card">
-            <span>Pagos pendientes</span>
-            <strong>14</strong>
-          </div>
-          <div className="resumen-card">
-            <span>Deudas vencidas</span>
-            <strong>5</strong>
-          </div>
-          <div className="resumen-card">
-            <span>Comprobantes</span>
-            <strong>86</strong>
-          </div>
-        </section>
+      <ContadorSidebar
+        seccion={seccion}
+        setSeccion={setSeccion}
+        menuAbierto={menuAbierto}
+        setMenuAbierto={setMenuAbierto}
+      />
 
-        <section className="contenido-grid">
-          <div className="panel-card grande">
-            <h2>Últimos movimientos</h2>
-            <div className="tabla">
-              <div>
-                <strong>Pago de membresía</strong>
-                <span>Juan Pérez - S/ 250</span>
-              </div>
-              <div>
-                <strong>Reserva de salón</strong>
-                <span>María López - S/ 400</span>
-              </div>
-              <div>
-                <strong>Cuota mensual</strong>
-                <span>Carlos Ramos - S/ 180</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="panel-card">
-            <h2>Acciones</h2>
-            <div className="acciones">
-              <button>Registrar pago</button>
-              <button>Ver deudas</button>
-              <button>Generar reporte</button>
-            </div>
-          </div>
-        </section>
+      <main className="admin-main">
+        {seccion === "dashboard" && <Dashboard />}
+        {seccion === "cuotas" && <Cuotas />}
+        {seccion === "pagos" && <Pagos />}
+        {seccion === "finanzas" && <Finanzas />}
+        {seccion === "reportes" && <Reportes />}
       </main>
     </div>
   );

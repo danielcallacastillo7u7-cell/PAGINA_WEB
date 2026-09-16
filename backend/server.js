@@ -9,6 +9,8 @@ import sociosRoutes from "./routes/socios.routes.js";
 import importacionesRoutes from "./routes/importaciones.routes.js";
 import cuotasRoutes from "./routes/cuotas.routes.js";
 import reportesRoutes from "./routes/reportes.routes.js";
+import finanzasRoutes from "./routes/finanzas.routes.js";
+
 dotenv.config();
 
 const app = express();
@@ -22,10 +24,10 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/pagos", pagosRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/socios", sociosRoutes);
-app.use("/api/importaciones",importacionesRoutes);
-app.use("/api/cuotas",cuotasRoutes);
-app.use(
-  "/api/reportes",reportesRoutes);
+app.use("/api/importaciones", importacionesRoutes);
+app.use("/api/cuotas", cuotasRoutes);
+app.use("/api/reportes", reportesRoutes);
+app.use("/api/finanzas", finanzasRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend funcionando");

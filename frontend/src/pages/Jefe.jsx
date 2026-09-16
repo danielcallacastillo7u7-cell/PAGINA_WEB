@@ -3,8 +3,8 @@ import { useState } from "react";
 import "./Panel.css";
 
 import Socios from "./Jefe/socios.jsx";
-import Dashboard from "./Jefe/Dashboard.jsx";
-import JefeSidebar from "./Jefe/JefeSidebar.jsx";
+import Dashboard from "./Jefe/dashboard.jsx";
+import JefeSidebar from "./Jefe/jefesidebar.jsx";
 import Pagos from "./Jefe/Pagos.jsx";
 import ImportarExcel from "./Jefe/ImportarExcel.jsx";
 import Cuotas from "./Jefe/Cuotas.jsx";
