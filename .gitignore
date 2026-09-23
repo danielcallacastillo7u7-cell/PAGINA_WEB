@@ -2,3 +2,8 @@ node_modules/
 .env
 vendor/
 .vscode/
+
+.env.*
+!.env.example
+dist/
+backend/uploads/

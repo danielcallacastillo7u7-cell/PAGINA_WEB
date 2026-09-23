@@ -98,7 +98,7 @@ router.get("/", async (req, res) => {
         INNER JOIN socios_club s
           ON s.id = p.socio_id
 
-        INNER JOIN cuotas c
+        INNER JOIN cuotas_club c
           ON c.id = p.cuota_id
 
         ${where}
@@ -274,7 +274,7 @@ router.get(
             s.lote,
             s.tipo
 
-          FROM cuotas c
+          FROM cuotas_club c
 
           INNER JOIN socios_club s
             ON s.id = c.socio_id
@@ -366,7 +366,7 @@ router.post(
 
             s.nombre
 
-          FROM cuotas c
+          FROM cuotas_club c
 
           INNER JOIN socios_club s
             ON s.id = c.socio_id
@@ -402,7 +402,7 @@ router.post(
       }
 
       if (
-        Number(monto) <= 0
+        !Number.isFinite(Number(monto)) || Number(monto) <= 0
       ) {
         return res
           .status(400)
@@ -521,8 +521,8 @@ router.patch(
         pagoResult.rows[0];
 
       if (
-        pago.estado ===
-        "aprobado"
+        pago.estado !==
+        "pendiente"
       ) {
         await client.query(
           "ROLLBACK"
@@ -532,9 +532,11 @@ router.patch(
           .status(400)
           .json({
             mensaje:
-              "El pago ya fue aprobado.",
+              "El pago ya fue revisado.",
           });
       }
+
+      await client.query("SELECT id FROM cuotas_club WHERE id = $1 FOR UPDATE", [pago.cuota_id]);
 
       await client.query(
         `
@@ -578,7 +580,7 @@ router.patch(
           `
           SELECT
             monto
-          FROM cuotas
+          FROM cuotas_club
           WHERE id = $1
           FOR UPDATE
           `,
@@ -607,7 +609,7 @@ router.patch(
       ) {
         await client.query(
           `
-          UPDATE cuotas
+          UPDATE cuotas_club
 
           SET estado = 'pagado'
 

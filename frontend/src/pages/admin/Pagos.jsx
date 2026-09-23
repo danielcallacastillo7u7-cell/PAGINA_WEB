@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+import { apiFetch, abrirComprobante } from "../../api.js";
+import { useEffect, useState } from "react";
 
 function Pagos() {
   const [vistaPagos, setVistaPagos] = useState("historial");
@@ -8,8 +9,9 @@ function Pagos() {
   async function cargarPagos() {
     try {
       setCargando(true);
-      const respuesta = await fetch("http://localhost:3000/api/pagos");
+      const respuesta = await apiFetch("/api/solicitudes");
       const datos = await respuesta.json();
+      if (!respuesta.ok) throw new Error(datos.mensaje);
       setPagos(datos);
     } catch (error) {
       console.error("Error cargando pagos:", error);
@@ -45,7 +47,7 @@ function Pagos() {
     const confirmar = confirm(`Aprobar esta solicitud con monto S/ ${monto}?`);
     if (!confirmar) return;
 
-    const respuesta = await fetch(`http://localhost:3000/api/pagos/${id}/aprobar`, {
+    const respuesta = await apiFetch(`/api/solicitudes/${id}/aprobar`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -71,7 +73,7 @@ function Pagos() {
     const confirmar = confirm(`Rechazar esta solicitud y guardar monto S/ ${monto}?`);
     if (!confirmar) return;
 
-    const respuesta = await fetch(`http://localhost:3000/api/pagos/${id}/rechazar`, {
+    const respuesta = await apiFetch(`/api/solicitudes/${id}/rechazar`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -221,8 +223,8 @@ function Pagos() {
                   {pago.comprobante_url && (
                     <a
                       className="boton-link"
-                      href={pago.comprobante_url}
-                      target="_blank"
+                      href="#" onClick={(e) => { e.preventDefault(); abrirComprobante(pago.id); }}
+
                       rel="noreferrer"
                     >
                       Ver comprobante

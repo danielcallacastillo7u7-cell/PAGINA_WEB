@@ -1,3 +1,4 @@
+import { apiFetch } from "../api.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
@@ -30,7 +31,7 @@ function Login() {
     try {
       setCargando(true);
 
-      const respuesta = await fetch("http://localhost:3000/api/auth/login", {
+      const respuesta = await apiFetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,7 +76,7 @@ function Login() {
     try {
       setCargando(true);
 
-      const respuesta = await fetch("http://localhost:3000/api/auth/verificar-jefe", {
+      const respuesta = await apiFetch("/api/auth/verificar-jefe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

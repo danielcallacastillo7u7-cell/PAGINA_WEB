@@ -1,3 +1,5 @@
+import { randomInt } from "node:crypto";
+import { autenticar, roles } from "../middleware/auth.js";
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -6,6 +8,21 @@ import { pool } from "../db.js";
 
 const router = Router();
 const codigosJefe = new Map();
+const intentosLogin = new Map();
+const limpieza = setInterval(() => {
+  for (const [key, value] of intentosLogin) if (value.vence < Date.now()) intentosLogin.delete(key);
+  for (const [key, value] of codigosJefe) if (value.vence < Date.now()) codigosJefe.delete(key);
+}, 60000);
+limpieza.unref();
+function limitarLogin(req, res, next) {
+  const key = req.ip;
+  let registro = intentosLogin.get(key);
+  if (!registro || registro.vence < Date.now()) registro = { cuenta: 0, vence: Date.now() + 60000 };
+  registro.cuenta++;
+  intentosLogin.set(key, registro);
+  if (registro.cuenta > 10) return res.status(429).json({ mensaje: "Demasiados intentos. Espera un minuto." });
+  next();
+}
 
 function crearToken(usuario) {
   return jwt.sign(
@@ -30,7 +47,7 @@ function datosUsuario(usuario) {
 }
 
 function generarCodigo() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  return String(randomInt(100000, 1000000));
 }
 
 async function enviarCodigoPorCorreo(correo, codigo) {
@@ -41,7 +58,7 @@ async function enviarCodigoPorCorreo(correo, codigo) {
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST || "smtp.gmail.com",
     port: Number(process.env.MAIL_PORT || 587),
-    secure: false,
+    secure: Number(process.env.MAIL_PORT || 587) === 465,
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS,
@@ -65,11 +82,11 @@ router.get("/test", (req, res) => {
   res.json({ mensaje: "Ruta auth funcionando correctamente" });
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", limitarLogin, async (req, res) => {
   try {
     const { correo, password } = req.body;
 
-    if (!correo || !password) {
+    if (typeof correo !== "string" || typeof password !== "string" || !correo.trim() || !password) {
       return res.status(400).json({
         mensaje: "Correo y contrasena son obligatorios",
       });
@@ -78,7 +95,7 @@ router.post("/login", async (req, res) => {
     const correoNormalizado = correo.toLowerCase().trim();
 
     const resultado = await pool.query(
-      "SELECT * FROM usuarios WHERE correo = $1 AND estado = true",
+      "SELECT * FROM usuarios WHERE LOWER(correo) = $1 AND estado = true",
       [correoNormalizado]
     );
 
@@ -109,6 +126,7 @@ router.post("/login", async (req, res) => {
 
       codigosJefe.set(usuario.id, {
         codigo,
+        intentos: 0,
         vence,
         usuario,
       });
@@ -145,7 +163,7 @@ router.post("/verificar-jefe", async (req, res) => {
   try {
     const { usuarioId, codigo } = req.body;
 
-    if (!usuarioId || !codigo) {
+    if (!Number.isSafeInteger(Number(usuarioId)) || typeof codigo !== "string" || !/^\d{6}$/.test(codigo)) {
       return res.status(400).json({
         mensaje: "El codigo es obligatorio",
       });
@@ -166,6 +184,8 @@ router.post("/verificar-jefe", async (req, res) => {
       });
     }
 
+    registro.intentos += 1;
+    if (registro.intentos >= 5) codigosJefe.delete(Number(usuarioId));
     if (registro.codigo !== codigo.trim()) {
       return res.status(401).json({
         mensaje: "Codigo incorrecto",
@@ -174,11 +194,13 @@ router.post("/verificar-jefe", async (req, res) => {
 
     codigosJefe.delete(Number(usuarioId));
 
-    const token = crearToken(registro.usuario);
+    const vigente = await pool.query("SELECT id, nombre, correo, rol FROM usuarios WHERE id = $1 AND estado = true AND rol = 'jefe'", [Number(usuarioId)]);
+    if (!vigente.rows[0]) return res.status(401).json({ mensaje: "La cuenta ya no está habilitada." });
+    const token = crearToken(vigente.rows[0]);
 
     res.json({
       token,
-      usuario: datosUsuario(registro.usuario),
+      usuario: datosUsuario(vigente.rows[0]),
     });
   } catch (error) {
     console.error(error);
@@ -188,17 +210,19 @@ router.post("/verificar-jefe", async (req, res) => {
   }
 });
 
-router.post("/register", async (req, res) => {
+router.get("/me", autenticar, (req, res) => res.json({ usuario: req.usuario }));
+
+router.post("/register", autenticar, roles("jefe", "admin"), async (req, res) => {
   try {
     const { nombre, correo, password, rol } = req.body;
 
-    if (!nombre || !correo || !password || !rol) {
+    if (![nombre, correo, password, rol].every(v => typeof v === "string" && v.trim()) || password.length < 8) {
       return res.status(400).json({
         mensaje: "Todos los campos son obligatorios",
       });
     }
 
-    const rolesPermitidos = ["admin", "usuario", "jefe", "contador"];
+    const rolesPermitidos = req.usuario.rol === "jefe" ? ["admin", "usuario", "jefe", "contador"] : ["usuario"];
 
     if (!rolesPermitidos.includes(rol)) {
       return res.status(400).json({

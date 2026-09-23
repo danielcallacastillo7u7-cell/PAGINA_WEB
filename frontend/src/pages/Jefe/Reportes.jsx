@@ -1,3 +1,4 @@
+import { apiFetch } from "../../api.js";
 import {
   useCallback,
   useEffect,
@@ -97,12 +98,12 @@ function Reportes() {
             respuestaMovimientos,
           ] =
             await Promise.all([
-              fetch(
-                `http://localhost:3000/api/reportes/resumen?anio=${anio}&mes=${mes}`
+              apiFetch(
+                `/api/reportes/resumen?anio=${anio}&mes=${mes}`
               ),
 
-              fetch(
-                `http://localhost:3000/api/reportes/movimientos?anio=${anio}&mes=${mes}`
+              apiFetch(
+                `/api/reportes/movimientos?anio=${anio}&mes=${mes}`
               ),
             ]);
 
@@ -174,8 +175,8 @@ function Reportes() {
 
 
         const respuesta =
-          await fetch(
-            `http://localhost:3000/api/reportes/excel/${anio}`
+          await apiFetch(
+            `/api/reportes/excel/${anio}`
           );
 
 

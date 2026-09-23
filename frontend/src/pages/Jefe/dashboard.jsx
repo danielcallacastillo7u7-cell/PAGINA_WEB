@@ -1,3 +1,4 @@
+import { apiFetch } from "../../api.js";
 import {
   useCallback,
   useEffect,
@@ -20,8 +21,8 @@ function Dashboard() {
         setError("");
 
         const respuesta =
-          await fetch(
-            "http://localhost:3000/api/dashboard/resumen"
+          await apiFetch(
+            "/api/dashboard/resumen"
           );
 
         const resultado =

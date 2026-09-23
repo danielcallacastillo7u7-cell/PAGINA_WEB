@@ -1,4 +1,5 @@
-﻿import { useState } from "react";
+import { apiFetch } from "../../api.js";
+import { useState } from "react";
 
 function MisCuotas() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
@@ -21,14 +22,13 @@ function MisCuotas() {
     }
 
     const formData = new FormData();
-    formData.append("usuario_id", usuario.id);
     formData.append("descripcion", descripcion);
     formData.append("comprobante", comprobante);
 
     try {
       setEnviando(true);
 
-      const respuesta = await fetch("http://localhost:3000/api/pagos", {
+      const respuesta = await apiFetch("/api/solicitudes", {
         method: "POST",
         body: formData,
       });

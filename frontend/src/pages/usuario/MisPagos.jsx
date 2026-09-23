@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+import { apiFetch, abrirComprobante } from "../../api.js";
+import { useEffect, useState } from "react";
 
 function MisPagos() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
@@ -11,12 +12,13 @@ function MisPagos() {
       try {
         if (!usuario?.id) return;
 
-        const respuesta = await fetch(
-          `http://localhost:3000/api/pagos/usuario/${usuario.id}`
+        const respuesta = await apiFetch(
+          `/api/solicitudes/usuario/${usuario.id}`
         );
 
         const datos = await respuesta.json();
-        setPagos(datos);
+        if (!respuesta.ok) throw new Error(datos.mensaje);
+      setPagos(datos);
       } catch (error) {
         console.error("Error cargando mis pagos:", error);
       } finally {
@@ -95,7 +97,7 @@ function MisPagos() {
                 </em>
 
                 {pago.comprobante_url ? (
-                  <a href={pago.comprobante_url} target="_blank" rel="noreferrer">
+                  <a href="#" onClick={(e) => { e.preventDefault(); abrirComprobante(pago.id); }}  rel="noreferrer">
                     Ver comprobante
                   </a>
                 ) : (

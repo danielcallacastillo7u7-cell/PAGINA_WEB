@@ -1,3 +1,4 @@
+import { apiFetch } from "../../api.js";
 import {
   useCallback,
   useEffect,
@@ -118,8 +119,8 @@ function Pagos() {
           }
 
           const respuesta =
-            await fetch(
-              `http://localhost:3000/api/pagos?${parametros.toString()}`
+            await apiFetch(
+              `/api/pagos?${parametros.toString()}`
             );
 
           const datos =
@@ -154,8 +155,8 @@ function Pagos() {
     async () => {
       try {
         const respuesta =
-          await fetch(
-            "http://localhost:3000/api/pagos/resumen"
+          await apiFetch(
+            "/api/pagos/resumen"
           );
 
         const datos =
@@ -178,8 +179,8 @@ function Pagos() {
     async () => {
       try {
         const respuesta =
-          await fetch(
-            "http://localhost:3000/api/pagos/cuotas-pendientes"
+          await apiFetch(
+            "/api/pagos/cuotas-pendientes"
           );
 
         const datos =
@@ -269,8 +270,8 @@ function Pagos() {
 
       try {
         const respuesta =
-          await fetch(
-            "http://localhost:3000/api/pagos",
+          await apiFetch(
+            "/api/pagos",
             {
               method: "POST",
 
@@ -345,8 +346,8 @@ function Pagos() {
 
       try {
         const respuesta =
-          await fetch(
-            `http://localhost:3000/api/pagos/${pago.id}/aprobar`,
+          await apiFetch(
+            `/api/pagos/${pago.id}/aprobar`,
             {
               method:
                 "PATCH",
@@ -397,8 +398,8 @@ function Pagos() {
 
       try {
         const respuesta =
-          await fetch(
-            `http://localhost:3000/api/pagos/${pago.id}/rechazar`,
+          await apiFetch(
+            `/api/pagos/${pago.id}/rechazar`,
             {
               method:
                 "PATCH",

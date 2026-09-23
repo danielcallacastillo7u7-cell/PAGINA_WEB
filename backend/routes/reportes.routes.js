@@ -88,7 +88,7 @@ router.get(
               0
             ) AS monto_por_cobrar
 
-          FROM cuotas
+          FROM cuotas_club
 
           WHERE
             anio = $1
@@ -361,7 +361,7 @@ router.get(
 
           FROM pagos_cuotas p
 
-          INNER JOIN cuotas c
+          INNER JOIN cuotas_club c
             ON c.id = p.cuota_id
 
           INNER JOIN socios_club s
@@ -704,7 +704,7 @@ router.get(
 
             FROM pagos_cuotas p
 
-            INNER JOIN cuotas c
+            INNER JOIN cuotas_club c
               ON c.id = p.cuota_id
 
             INNER JOIN socios_club s

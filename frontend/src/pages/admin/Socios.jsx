@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+import { apiFetch } from "../../api.js";
+import { useEffect, useState } from "react";
 
 function Socios() {
   const [busqueda, setBusqueda] = useState("");
@@ -21,8 +22,9 @@ function Socios() {
 
   async function cargarSocios() {
     try {
-      const respuesta = await fetch("http://localhost:3000/api/admin/socios");
+      const respuesta = await apiFetch("/api/admin/socios");
       const datos = await respuesta.json();
+      if (!respuesta.ok) throw new Error(datos.mensaje);
       setSocios(datos);
     } catch (error) {
       console.error("Error cargando socios:", error);
@@ -72,7 +74,7 @@ function Socios() {
       return;
     }
 
-    const respuesta = await fetch("http://localhost:3000/api/auth/register", {
+    const respuesta = await apiFetch("/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -111,10 +113,11 @@ function Socios() {
     setCargandoHistorial(true);
 
     try {
-      const respuesta = await fetch(
-        `http://localhost:3000/api/pagos/usuario/${socio.id}`
+      const respuesta = await apiFetch(
+        `/api/solicitudes/usuario/${socio.id}`
       );
       const datos = await respuesta.json();
+      if (!respuesta.ok) throw new Error(datos.mensaje);
       setHistorialPagos(datos);
     } catch (error) {
       console.error("Error cargando historial:", error);
@@ -159,8 +162,8 @@ function Socios() {
   async function guardarEdicion(e) {
     e.preventDefault();
 
-    const respuesta = await fetch(
-      `http://localhost:3000/api/admin/socios/${socioEditando.id}`,
+    const respuesta = await apiFetch(
+      `/api/admin/socios/${socioEditando.id}`,
       {
         method: "PUT",
         headers: {
@@ -190,8 +193,8 @@ function Socios() {
 
     if (!confirmar) return;
 
-    const respuesta = await fetch(
-      `http://localhost:3000/api/admin/socios/${id}/desactivar`,
+    const respuesta = await apiFetch(
+      `/api/admin/socios/${id}/desactivar`,
       {
         method: "PATCH",
       }
@@ -213,8 +216,8 @@ function Socios() {
 
     if (!confirmar) return;
 
-    const respuesta = await fetch(
-      `http://localhost:3000/api/admin/socios/${id}/activar`,
+    const respuesta = await apiFetch(
+      `/api/admin/socios/${id}/activar`,
       {
         method: "PATCH",
       }
@@ -426,9 +429,7 @@ function Socios() {
           </p>
 
           <div className="historial-lista">
-            <div>Registro de socio creado en el sistema</div>
-            <div>Sin historial de pagos real todaví­a</div>
-            <div>Más adelante aquí­ aparecerán cuotas, pagos y recibos</div>
+            {cargandoHistorial ? <p>Cargando pagos...</p> : historialPagos.length === 0 ? <p>Sin pagos registrados.</p> : historialPagos.map(pago => <article key={pago.id}><strong>{formatearMonto(pago.monto)}</strong><p>{pago.estado} - {formatearFecha(pago.fecha_pago)}</p><p>{pago.descripcion}</p></article>)}
           </div>
         </section>
       )}

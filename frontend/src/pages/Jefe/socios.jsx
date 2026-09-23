@@ -1,3 +1,4 @@
+import { apiFetch } from "../../api.js";
 import {
   useEffect,
   useState,
@@ -70,8 +71,8 @@ function Socios() {
         }
 
         const respuesta =
-          await fetch(
-            `http://localhost:3000/api/socios?${parametros.toString()}`
+          await apiFetch(
+            `/api/socios?${parametros.toString()}`
           );
 
         const datos =
@@ -103,8 +104,8 @@ function Socios() {
     async () => {
       try {
         const respuesta =
-          await fetch(
-            "http://localhost:3000/api/socios/resumen"
+          await apiFetch(
+            "/api/socios/resumen"
           );
 
         const datos =
@@ -165,8 +166,8 @@ function Socios() {
 
       try {
         const respuesta =
-          await fetch(
-            `http://localhost:3000/api/socios/${socio.id}/estado`,
+          await apiFetch(
+            `/api/socios/${socio.id}/estado`,
             {
               method: "PATCH",
 

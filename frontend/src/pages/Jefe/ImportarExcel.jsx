@@ -1,3 +1,4 @@
+import { apiFetch } from "../../api.js";
 import { useState } from "react";
 
 function ImportarExcel() {
@@ -19,8 +20,8 @@ function ImportarExcel() {
     try {
       setCargando(true);
 
-      const respuesta = await fetch(
-        "http://localhost:3000/api/importaciones/analizar",
+      const respuesta = await apiFetch(
+        "/api/importaciones/analizar",
         {
           method: "POST",
           body: formData,
@@ -74,8 +75,8 @@ function ImportarExcel() {
     try {
       setImportando(true);
 
-      const respuesta = await fetch(
-        "http://localhost:3000/api/importaciones/confirmar",
+      const respuesta = await apiFetch(
+        "/api/importaciones/confirmar",
         {
           method: "POST",
           body: formData,

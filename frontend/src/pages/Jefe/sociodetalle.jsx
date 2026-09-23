@@ -1,3 +1,4 @@
+import { apiFetch } from "../../api.js";
 import {
   useEffect,
   useState,
@@ -29,8 +30,8 @@ function SocioDetalle({
         setError("");
 
         const respuesta =
-          await fetch(
-            `http://localhost:3000/api/socios/${socioId}`
+          await apiFetch(
+            `/api/socios/${socioId}`
           );
 
         const resultado =

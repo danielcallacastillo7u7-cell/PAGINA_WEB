@@ -1,3 +1,4 @@
+import { apiFetch } from "../../api.js";
 import {
   useCallback,
   useEffect,
@@ -131,8 +132,8 @@ function Cuotas() {
       async () => {
         try {
           const respuesta =
-            await fetch(
-              `http://localhost:3000/api/cuotas/resumen/${anio}`
+            await apiFetch(
+              `/api/cuotas/resumen/${anio}`
             );
 
           const datos =
@@ -156,8 +157,8 @@ function Cuotas() {
   const actualizarVencidas =
     async () => {
       try {
-        await fetch(
-          "http://localhost:3000/api/cuotas/actualizar-vencidas",
+        await apiFetch(
+          "/api/cuotas/actualizar-vencidas",
           {
             method: "PATCH",
           }
@@ -216,8 +217,8 @@ function Cuotas() {
           }
 
           const respuesta =
-            await fetch(
-              `http://localhost:3000/api/cuotas?${parametros.toString()}`
+            await apiFetch(
+              `/api/cuotas?${parametros.toString()}`
             );
 
           const datos =
@@ -315,8 +316,8 @@ function Cuotas() {
         setGenerando(true);
 
         const respuesta =
-          await fetch(
-            "http://localhost:3000/api/cuotas/generar",
+          await apiFetch(
+            "/api/cuotas/generar",
             {
               method: "POST",
 

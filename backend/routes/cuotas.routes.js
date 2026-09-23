@@ -93,7 +93,7 @@ router.get("/", async (req, res) => {
           s.lote,
           s.tipo
 
-        FROM cuotas c
+        FROM cuotas_club c
 
         INNER JOIN socios_club s
           ON s.id = c.socio_id
@@ -198,7 +198,7 @@ router.get(
               0
             ) AS total_por_cobrar
 
-          FROM cuotas
+          FROM cuotas_club
 
           WHERE anio = $1
           `,
@@ -284,7 +284,9 @@ router.post(
       }
 
       if (
-        Number(mes) < 1 ||
+        !Number.isInteger(Number(anio)) || Number(anio) < 1900 || Number(anio) > 2200 ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(fechaVencimiento) || Number.isNaN(Date.parse(fechaVencimiento)) ||
+        !Number.isInteger(Number(mes)) || Number(mes) < 1 ||
         Number(mes) > 12
       ) {
         return res
@@ -307,7 +309,7 @@ router.post(
       const resultado =
         await pool.query(
           `
-          INSERT INTO cuotas (
+          INSERT INTO cuotas_club (
             socio_id,
             anio,
             mes,
@@ -387,7 +389,7 @@ router.patch(
     try {
       const resultado =
         await pool.query(`
-          UPDATE cuotas
+          UPDATE cuotas_club
 
           SET estado = 'vencido'
 
@@ -457,7 +459,7 @@ router.get(
             p.numero_recibo,
             p.estado AS estado_pago
 
-          FROM cuotas c
+          FROM cuotas_club c
 
           INNER JOIN socios_club s
             ON s.id = c.socio_id

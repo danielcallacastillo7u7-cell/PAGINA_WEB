@@ -1,13 +1,13 @@
 import { Router } from "express";
 import multer from "multer";
 import XLSX from "xlsx";
-import fs from "fs";
 import { pool } from "../db.js";
 
 const router = Router();
 
 const upload = multer({
-  dest: "uploads/excel/",
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
 });
 
 
@@ -30,14 +30,13 @@ function numero(valor) {
   }
 
   const limpio = String(valor)
-    .replace("S/", "")
-    .replace("S/.", "")
-    .replace(",", "")
+    .replace(/S\/\.?/g, "")
+    .replace(/,/g, "")
     .trim();
 
   const resultado = Number(limpio);
 
-  return Number.isNaN(resultado)
+  return !Number.isFinite(resultado)
     ? null
     : resultado;
 }
@@ -241,7 +240,7 @@ function obtenerMovimientos(workbook) {
         fila.findIndex((v) =>
           texto(v)
             .toUpperCase()
-            .includes("DIRECCION")
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes("DIRECCION")
         );
 
 
@@ -390,9 +389,10 @@ router.post(
 
 
       const workbook =
-        XLSX.readFile(
-          req.file.path,
+        XLSX.read(
+          req.file.buffer,
           {
+            type: "buffer",
             cellDates: true,
           }
         );
@@ -420,9 +420,7 @@ router.post(
         );
 
 
-      fs.unlinkSync(
-        req.file.path
-      );
+
 
 
       res.json({
@@ -514,9 +512,10 @@ router.post(
 
 
       const workbook =
-        XLSX.readFile(
-          req.file.path,
+        XLSX.read(
+          req.file.buffer,
           {
+            type: "buffer",
             cellDates: true,
           }
         );
@@ -534,6 +533,17 @@ router.post(
         "BEGIN"
       );
 
+
+      await cliente.query("SELECT pg_advisory_xact_lock(hashtext($1))", [req.file.originalname]);
+      const anterior = await cliente.query("SELECT id FROM importaciones_excel WHERE nombre_archivo = $1 LIMIT 1", [req.file.originalname]);
+      if (anterior.rowCount) {
+        await cliente.query("ROLLBACK");
+        return res.status(409).json({ mensaje: "Ya existe una importación con ese nombre. Revisa el historial antes de repetirla." });
+      }
+      if ((!socios.length && !movimientos.length) || movimientos.some(m => !Number.isFinite(m.monto) || m.monto <= 0)) {
+        await cliente.query("ROLLBACK");
+        return res.status(400).json({ mensaje: "El archivo no contiene datos válidos para importar." });
+      }
 
       const importacion =
         await cliente.query(
@@ -648,9 +658,7 @@ router.post(
       );
 
 
-      fs.unlinkSync(
-        req.file.path
-      );
+
 
 
       res.status(201).json({

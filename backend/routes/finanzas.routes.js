@@ -339,7 +339,7 @@ router.post("/", async (req, res) => {
 
 
     if (
-      Number(monto) <= 0
+      !Number.isFinite(Number(monto)) || Number(monto) <= 0
     ) {
       return res
         .status(400)

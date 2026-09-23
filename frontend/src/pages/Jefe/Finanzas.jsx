@@ -1,3 +1,4 @@
+import { apiFetch } from "../../api.js";
 import {
   useCallback,
   useEffect,
@@ -167,8 +168,8 @@ function Finanzas() {
 
 
           const respuesta =
-            await fetch(
-              `http://localhost:3000/api/finanzas?${parametros.toString()}`
+            await apiFetch(
+              `/api/finanzas?${parametros.toString()}`
             );
 
           const datos =
@@ -209,8 +210,8 @@ function Finanzas() {
       async () => {
         try {
           const respuesta =
-            await fetch(
-              `http://localhost:3000/api/finanzas/resumen?anio=${anio}&mes=${mes}`
+            await apiFetch(
+              `/api/finanzas/resumen?anio=${anio}&mes=${mes}`
             );
 
           const datos =
@@ -300,8 +301,8 @@ function Finanzas() {
 
       try {
         const respuesta =
-          await fetch(
-            "http://localhost:3000/api/finanzas",
+          await apiFetch(
+            "/api/finanzas",
             {
               method: "POST",
 
@@ -387,8 +388,8 @@ function Finanzas() {
 
       try {
         const respuesta =
-          await fetch(
-            `http://localhost:3000/api/finanzas/${movimiento.id}`,
+          await apiFetch(
+            `/api/finanzas/${movimiento.id}`,
             {
               method: "DELETE",
             }

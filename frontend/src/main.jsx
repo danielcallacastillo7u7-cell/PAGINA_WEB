@@ -1,3 +1,4 @@
+import ProtectedRoute from "./ProtectedRoute.jsx";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -17,10 +18,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/usuario" element={<Usuario />} />
-        <Route path="/jefe" element={<Jefe />} />
-        <Route path="/contador" element={<Contador />} />
+        <Route path="/admin" element={<ProtectedRoute rol="admin"><Admin /></ProtectedRoute>} />
+        <Route path="/usuario" element={<ProtectedRoute rol="usuario"><Usuario /></ProtectedRoute>} />
+        <Route path="/jefe" element={<ProtectedRoute rol="jefe"><Jefe /></ProtectedRoute>} />
+        <Route path="/contador" element={<ProtectedRoute rol="contador"><Contador /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

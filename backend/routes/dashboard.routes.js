@@ -53,7 +53,18 @@ router.get("/resumen", async (req, res) => {
           WHERE tipo = 'egreso'
         )::int AS cantidad_egresos
 
-      FROM movimientos_financieros
+      FROM (
+        SELECT id, fecha, tipo, direccion, concepto, numero_recibo, monto
+        FROM movimientos_financieros
+        UNION ALL
+        SELECT -p.id, p.fecha_pago, 'ingreso',
+          CONCAT(s.zona, '-', s.lote), 'Cuota ' || c.mes || '/' || c.anio,
+          p.numero_recibo, p.monto
+        FROM pagos_cuotas p
+        JOIN cuotas_club c ON c.id = p.cuota_id
+        JOIN socios_club s ON s.id = p.socio_id
+        WHERE p.estado = 'aprobado'
+      ) AS libro
 
       WHERE
         EXTRACT(MONTH FROM fecha)
@@ -87,7 +98,18 @@ router.get("/resumen", async (req, res) => {
           0
         ) AS total_egresos
 
-      FROM movimientos_financieros
+      FROM (
+        SELECT id, fecha, tipo, direccion, concepto, numero_recibo, monto
+        FROM movimientos_financieros
+        UNION ALL
+        SELECT -p.id, p.fecha_pago, 'ingreso',
+          CONCAT(s.zona, '-', s.lote), 'Cuota ' || c.mes || '/' || c.anio,
+          p.numero_recibo, p.monto
+        FROM pagos_cuotas p
+        JOIN cuotas_club c ON c.id = p.cuota_id
+        JOIN socios_club s ON s.id = p.socio_id
+        WHERE p.estado = 'aprobado'
+      ) AS libro
     `);
 
     /* ==========================
@@ -104,7 +126,18 @@ router.get("/resumen", async (req, res) => {
         numero_recibo,
         monto
 
-      FROM movimientos_financieros
+      FROM (
+        SELECT id, fecha, tipo, direccion, concepto, numero_recibo, monto
+        FROM movimientos_financieros
+        UNION ALL
+        SELECT -p.id, p.fecha_pago, 'ingreso',
+          CONCAT(s.zona, '-', s.lote), 'Cuota ' || c.mes || '/' || c.anio,
+          p.numero_recibo, p.monto
+        FROM pagos_cuotas p
+        JOIN cuotas_club c ON c.id = p.cuota_id
+        JOIN socios_club s ON s.id = p.socio_id
+        WHERE p.estado = 'aprobado'
+      ) AS libro
 
       ORDER BY
         fecha DESC,
@@ -207,7 +240,18 @@ router.get("/mensual", async (req, res) => {
           0
         ) AS egresos
 
-      FROM movimientos_financieros
+      FROM (
+        SELECT id, fecha, tipo, direccion, concepto, numero_recibo, monto
+        FROM movimientos_financieros
+        UNION ALL
+        SELECT -p.id, p.fecha_pago, 'ingreso',
+          CONCAT(s.zona, '-', s.lote), 'Cuota ' || c.mes || '/' || c.anio,
+          p.numero_recibo, p.monto
+        FROM pagos_cuotas p
+        JOIN cuotas_club c ON c.id = p.cuota_id
+        JOIN socios_club s ON s.id = p.socio_id
+        WHERE p.estado = 'aprobado'
+      ) AS libro
 
       GROUP BY
         EXTRACT(YEAR FROM fecha),
