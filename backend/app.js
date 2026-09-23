@@ -1,3 +1,5 @@
+import cuentasRoutes from './routes/cuentas.routes.js';
+import { pool } from './db.js';
 import reservasRoutes from './routes/reservas.routes.js';
 import portalRoutes from './routes/portal.routes.js';
 import { publico, comunidad } from './routes/comunidad.routes.js';
@@ -19,12 +21,24 @@ import reportesRoutes from "./routes/reportes.routes.js";
 
 const app = express();
 
+app.set("trust proxy", config.trustProxy);
 app.use(cors({ origin: config.origins }));
 app.use(express.json({ limit: "1mb" }));
 
+app.get('/health', async (_req,res) => {
+  try { await pool.query('SELECT 1');res.json({estado:'ok'}); }
+  catch { res.status(503).json({estado:'no_disponible'}); }
+});
 app.use("/api/publico", publico);
 app.use("/api/auth", authRoutes);
 app.use("/api", autenticar);
+app.use('/api/cuentas',roles('jefe'),cuentasRoutes);
+app.get('/api/configuracion',roles('jefe'),(_req,res)=>res.json({
+  correoConfigurado:Boolean(process.env.MAIL_USER && process.env.MAIL_PASS),
+  contactoConfigurado:Boolean(process.env.CLUB_TELEFONO && process.env.CLUB_CORREO && process.env.CLUB_DIRECCION),
+  almacenamientoExternoConfigurado:Boolean(process.env.UPLOAD_DIR),
+  origenes:config.origins
+}));
 app.use("/api/reservas", roles("usuario","jefe","admin"), reservasRoutes);
 app.use("/api/portal", roles("usuario"), portalRoutes);
 app.use("/api/comunidad", comunidad);

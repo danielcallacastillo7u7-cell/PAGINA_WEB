@@ -1,4 +1,6 @@
-import { randomInt } from "node:crypto";
+import { emitirCodigo, verificarCodigo } from "../services/codigos.js";
+import { crearCuenta, validarPassword } from "../services/cuentas.js";
+import { transaccion, auditar, fallo } from "../services/contabilidad.js";
 import { autenticar, roles } from "../middleware/auth.js";
 import { Router } from "express";
 import bcrypt from "bcryptjs";
@@ -7,11 +9,9 @@ import nodemailer from "nodemailer";
 import { pool } from "../db.js";
 
 const router = Router();
-const codigosJefe = new Map();
 const intentosLogin = new Map();
 const limpieza = setInterval(() => {
   for (const [key, value] of intentosLogin) if (value.vence < Date.now()) intentosLogin.delete(key);
-  for (const [key, value] of codigosJefe) if (value.vence < Date.now()) codigosJefe.delete(key);
 }, 60000);
 limpieza.unref();
 function limitarLogin(req, res, next) {
@@ -29,6 +29,7 @@ function crearToken(usuario) {
     {
       id: usuario.id,
       rol: usuario.rol,
+      sv: usuario.auth_version || 0,
     },
     process.env.JWT_SECRET,
     {
@@ -46,10 +47,6 @@ function datosUsuario(usuario) {
   };
 }
 
-function generarCodigo() {
-  return String(randomInt(100000, 1000000));
-}
-
 async function enviarCodigoPorCorreo(correo, codigo) {
   if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
     throw new Error("Falta configurar MAIL_USER y MAIL_PASS en .env");
@@ -59,6 +56,9 @@ async function enviarCodigoPorCorreo(correo, codigo) {
     host: process.env.MAIL_HOST || "smtp.gmail.com",
     port: Number(process.env.MAIL_PORT || 587),
     secure: Number(process.env.MAIL_PORT || 587) === 465,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS,
@@ -119,17 +119,7 @@ router.post("/login", limitarLogin, async (req, res) => {
     }
 
     if (usuario.rol === "jefe") {
-      const codigo = generarCodigo();
-      const vence = Date.now() + 10 * 60 * 1000;
-
-      await enviarCodigoPorCorreo(usuario.correo, codigo);
-
-      codigosJefe.set(usuario.id, {
-        codigo,
-        intentos: 0,
-        vence,
-        usuario,
-      });
+      await emitirCodigo(usuario.id, codigo => enviarCodigoPorCorreo(usuario.correo,codigo));
 
       return res.json({
         requiereCodigo: true,
@@ -149,7 +139,7 @@ router.post("/login", limitarLogin, async (req, res) => {
       usuario: datosUsuario(usuario),
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error de autenticación:", error.code || error.name);
     res.status(500).json({
       mensaje:
         error.message === "Falta configurar MAIL_USER y MAIL_PASS en .env"
@@ -169,41 +159,11 @@ router.post("/verificar-jefe", async (req, res) => {
       });
     }
 
-    const registro = codigosJefe.get(Number(usuarioId));
-
-    if (!registro) {
-      return res.status(400).json({
-        mensaje: "Solicita un nuevo codigo de acceso",
-      });
-    }
-
-    if (Date.now() > registro.vence) {
-      codigosJefe.delete(Number(usuarioId));
-      return res.status(400).json({
-        mensaje: "El codigo vencio. Solicita uno nuevo",
-      });
-    }
-
-    registro.intentos += 1;
-    if (registro.intentos >= 5) codigosJefe.delete(Number(usuarioId));
-    if (registro.codigo !== codigo.trim()) {
-      return res.status(401).json({
-        mensaje: "Codigo incorrecto",
-      });
-    }
-
-    codigosJefe.delete(Number(usuarioId));
-
-    const vigente = await pool.query("SELECT id, nombre, correo, rol FROM usuarios WHERE id = $1 AND estado = true AND rol = 'jefe'", [Number(usuarioId)]);
-    if (!vigente.rows[0]) return res.status(401).json({ mensaje: "La cuenta ya no está habilitada." });
-    const token = crearToken(vigente.rows[0]);
-
-    res.json({
-      token,
-      usuario: datosUsuario(vigente.rows[0]),
-    });
+    const resultado = await verificarCodigo(Number(usuarioId), codigo);
+    if (resultado.error) return res.status(401).json({mensaje:resultado.error});
+    res.json({token:crearToken(resultado.usuario),usuario:datosUsuario(resultado.usuario)});
   } catch (error) {
-    console.error(error);
+    console.error("Error de autenticación:", error.code || error.name);
     res.status(500).json({
       mensaje: "Error al verificar el codigo",
     });
@@ -212,52 +172,25 @@ router.post("/verificar-jefe", async (req, res) => {
 
 router.get("/me", autenticar, (req, res) => res.json({ usuario: req.usuario }));
 
-router.post("/register", autenticar, roles("jefe", "admin"), async (req, res) => {
-  try {
-    const { nombre, correo, password, rol } = req.body;
+router.post("/register", autenticar, roles("jefe", "admin"), async (req,res) => {
+  const usuario = await crearCuenta(req.usuario,req.body||{});
+  res.status(201).json({mensaje:'Cuenta creada correctamente.',usuario});
+});
 
-    if (![nombre, correo, password, rol].every(v => typeof v === "string" && v.trim()) || password.length < 8) {
-      return res.status(400).json({
-        mensaje: "Todos los campos son obligatorios",
-      });
-    }
-
-    const rolesPermitidos = req.usuario.rol === "jefe" ? ["admin", "usuario", "jefe", "contador"] : ["usuario"];
-
-    if (!rolesPermitidos.includes(rol)) {
-      return res.status(400).json({
-        mensaje: "Rol no permitido",
-      });
-    }
-
-    const correoNormalizado = correo.toLowerCase().trim();
-
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    const resultado = await pool.query(
-      `INSERT INTO usuarios (nombre, correo, password_hash, rol)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id, nombre, correo, rol, estado`,
-      [nombre.trim(), correoNormalizado, passwordHash, rol]
-    );
-
-    res.status(201).json({
-      mensaje: "Usuario registrado correctamente",
-      usuario: resultado.rows[0],
-    });
-  } catch (error) {
-    console.error(error);
-
-    if (error.code === "23505") {
-      return res.status(400).json({
-        mensaje: "Ese correo ya esta registrado",
-      });
-    }
-
-    res.status(500).json({
-      mensaje: "Error al registrar usuario",
-    });
-  }
+router.post('/cambiar-password', autenticar, limitarLogin, async (req,res) => {
+  const {actual,nueva}=req.body||{};
+  if (typeof actual !== 'string' || !actual || actual.length>1000) throw fallo(400,'Indica tu contraseña actual.');
+  validarPassword(nueva);
+  await transaccion(async db => {
+    const u=(await db.query('SELECT password_hash FROM usuarios WHERE id=$1 FOR UPDATE',[req.usuario.id])).rows[0];
+    if (!u || !await bcrypt.compare(actual,u.password_hash)) throw fallo(400,'La contraseña actual no es correcta.');
+    if (await bcrypt.compare(nueva,u.password_hash)) throw fallo(400,'Elige una contraseña diferente.');
+    const hash=await bcrypt.hash(nueva,10);
+    await db.query('UPDATE usuarios SET password_hash=$1,auth_version=auth_version+1 WHERE id=$2',[hash,req.usuario.id]);
+    await db.query('UPDATE codigos_acceso SET usado=true WHERE usuario_id=$1',[req.usuario.id]);
+    await auditar(db,req.usuario.id,'cambiar_password','cuenta',req.usuario.id);
+  });
+  res.json({mensaje:'Contraseña actualizada. Inicia sesión nuevamente.'});
 });
 
 export default router;

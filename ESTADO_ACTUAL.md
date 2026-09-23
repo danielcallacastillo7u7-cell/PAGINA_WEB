@@ -1,5 +1,15 @@
 # Club Catarindo: estado local, 22 de septiembre de 2026
 
+## Actualización de accesos y preparación del backend
+
+- El jefe dispone de **Cuentas y roles** para crear las cuatro clases de cuenta, editar datos, cambiar roles y activar/desactivar accesos. No puede quitarse el rol de jefe ni desactivarse a sí mismo. Los cambios invalidan sesiones anteriores.
+- **Mi acceso** permite cambiar contraseña a los cuatro roles, validando primero la actual. El servidor comprueba las reglas de contraseña y cierra las sesiones anteriores.
+- Los códigos del jefe se almacenan con hash y vencimiento en Neon, tienen cinco intentos y un solo uso. No se pierden por reiniciar el backend.
+- **Estado del sistema**, solo para el jefe, indica si están configurados correo, contacto y carpeta de comprobantes. No muestra secretos ni certifica entrega de correo.
+- Preparación de despliegue: carpeta persistente configurable, `/health`, cierre ordenado del servidor y Dockerfile. El backend aún debe publicarse y conectarse con Vercel; consultar DESPLIEGUE.md.
+- La migración aditiva 003_accesos.sql agrega la versión de sesión y el almacenamiento de códigos. No importa ni borra socios, cuotas o pagos.
+- Esta actualización pasó 24 pruebas automatizadas y 75 comprobaciones HTTP con PostgreSQL aislado. Se verificó navegación de escritorio y móvil para los cuatro roles. El envío real de correo y la imagen Docker siguen sin comprobarse: faltan credenciales SMTP y el motor Docker no está iniciado.
+
 ## Corregido y conectado
 
 - Padrón editable y vínculo entre propiedades y cuentas de socios.

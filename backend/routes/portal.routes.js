@@ -1,13 +1,12 @@
+import { uploads } from '../services/uploads.js';
 import { Router } from 'express';
 import multer from 'multer';
 import { mkdir, writeFile, unlink } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { pool } from '../db.js';
 import { registrarPago, transaccion, fallo } from '../services/contabilidad.js';
 const router = Router();
-const uploads=fileURLToPath(new URL('../uploads/',import.meta.url));
 const upload=multer({storage:multer.memoryStorage(),limits:{fileSize:5*1024*1024,files:1}});
 router.get('/cuotas',async(req,res)=>{
  const socios=(await pool.query('SELECT id,nombre,zona,lote FROM socios_club WHERE usuario_id=$1 AND estado=true',[req.usuario.id])).rows;

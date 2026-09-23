@@ -37,7 +37,7 @@ function AdminSidebar({
         >
           Comprobantes anteriores
         </button>
-        {[['padron','Padrón'],['cuotas-pagos','Pagos de cuotas'],['avisos','Avisos'],['mensajes','Mensajes'],['reservas','Reservas']].map(([id,label])=><button key={id} className={seccionAdmin===id?"activo":""} onClick={()=>cambiarSeccion(id)}>{label}</button>)}
+        {[['padron','Padrón'],['cuotas-pagos','Pagos de cuotas'],['avisos','Avisos'],['mensajes','Mensajes'],['reservas','Reservas'],['acceso','Mi acceso']].map(([id,label])=><button key={id} className={seccionAdmin===id?"activo":""} onClick={()=>cambiarSeccion(id)}>{label}</button>)}
       </nav>
 
       <a className="cerrar-sesion" href="/login" onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("usuario"); }}>

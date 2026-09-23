@@ -3,7 +3,10 @@ export async function apiFetch(path, options = {}) {
   const headers = new Headers(options.headers);
   const token = localStorage.getItem("token");
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  const response = await fetch(`${base}${path}`, { ...options, headers });
+  let response;
+  try { response = await fetch(`${base}${path}`, { ...options, headers }); }
+  catch { throw new Error('No se pudo conectar con el servicio. Intenta nuevamente en unos momentos.'); }
+  if (response.headers.get('content-type')?.includes('text/html')) throw new Error('El servicio todavía no está disponible. Contacta a la administración.');
   if (response.status === 401 && !path.startsWith("/api/auth/")) {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");

@@ -121,7 +121,7 @@ function JefeSidebar({
           Migrar datos históricos
         </button>
 
-        {[['padron','Gestionar padrón'],['cuentas','Cuentas de socios'],['solicitudes','Comprobantes anteriores'],['avisos','Avisos'],['mensajes','Mensajes'],['reservas','Reservas']].map(([id,label]) => <button key={id} className={seccion===id?'activo':''} onClick={()=>cambiarSeccion(id)}>{label}</button>)}
+        {[['padron','Gestionar padrón'],['cuentas','Cuentas y roles'],['solicitudes','Comprobantes anteriores'],['avisos','Avisos'],['mensajes','Mensajes'],['reservas','Reservas'],['acceso','Mi acceso'],['estado','Estado del sistema']].map(([id,label]) => <button key={id} className={seccion===id?'activo':''} onClick={()=>cambiarSeccion(id)}>{label}</button>)}
       </nav>
 
       <div className="admin-sidebar-footer">

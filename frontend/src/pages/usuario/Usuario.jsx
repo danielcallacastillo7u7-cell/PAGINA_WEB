@@ -1,3 +1,4 @@
+import MiAcceso from '../MiAcceso.jsx';
 import { useState } from "react";
 import "../Usuario.css";
 import UsuarioSidebar from "./UsuarioSidebar.jsx";
@@ -31,6 +32,7 @@ function Usuario() {
       />
 
       <main className="usuario-main">
+        {seccionActiva === "acceso" && <MiAcceso />}
         {seccionActiva === "cuenta" && <MiCuenta usuario={usuario} />}
         {seccionActiva === "cuotas" && <MisCuotas />}
         {seccionActiva === "pagos" && <MisPagos />}

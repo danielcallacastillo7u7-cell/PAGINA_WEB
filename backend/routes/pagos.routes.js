@@ -1,6 +1,6 @@
+import { uploads } from '../services/uploads.js';
 import { registrarPago, revisarPago, transaccion, fallo } from '../services/contabilidad.js';
 import { roles } from '../middleware/auth.js';
-import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 ﻿import { Router } from "express";
 import { pool } from "../db.js";
@@ -333,7 +333,7 @@ router.get('/:id/comprobante', async(req,res) => {
  const pago=(await pool.query('SELECT comprobante_url FROM pagos_cuotas WHERE id=$1',[req.params.id])).rows[0];
  const file=path.basename(pago?.comprobante_url||'');
  if(!/\.(png|jpe?g|webp)$/i.test(file))throw fallo(404,'Comprobante no disponible.');
- res.setHeader('X-Content-Type-Options','nosniff');res.sendFile(file,{root:fileURLToPath(new URL('../uploads/',import.meta.url))});
+ res.setHeader('X-Content-Type-Options','nosniff');res.sendFile(file,{root:uploads});
 });
 router.patch('/:id/anular',roles('jefe'),async(req,res)=>res.json(await transaccion(db=>revisarPago(db,req.usuario.id,req.params.id,'anular',req.body?.motivo||req.body?.observacion))));
 router.patch('/:id/:accion',async(req,res)=>{

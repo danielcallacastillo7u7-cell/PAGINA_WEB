@@ -1,3 +1,4 @@
+import MiAcceso from '../MiAcceso.jsx';
 import Padron from '../Padron.jsx';
 import Comunidad from '../Comunidad.jsx';
 import Mensajes from '../Mensajes.jsx';
@@ -37,6 +38,7 @@ function Admin() {
       />
 
       <main className="admin-main">
+        {seccionAdmin === 'acceso' && <MiAcceso />}
         {seccionAdmin === 'padron' && <Padron />}
         {seccionAdmin === 'avisos' && <Comunidad gestion />}
         {seccionAdmin === 'mensajes' && <Mensajes />}

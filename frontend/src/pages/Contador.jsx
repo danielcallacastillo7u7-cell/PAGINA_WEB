@@ -1,3 +1,4 @@
+import MiAcceso from './MiAcceso.jsx';
 import { useState } from "react";
 import "./Panel.css";
 import Dashboard from "./Jefe/dashboard.jsx";
@@ -61,6 +62,7 @@ function ContadorSidebar({ seccion, setSeccion, menuAbierto, setMenuAbierto }) {
         >
           Reportes
         </button>
+        <button className={seccion === "acceso" ? "activo" : ""} onClick={() => cambiarSeccion("acceso")}>Mi acceso</button>
       </nav>
 
       <div className="admin-sidebar-footer">
@@ -82,7 +84,7 @@ function Contador() {
         className="admin-menu-mobile-btn"
         onClick={() => setMenuAbierto(true)}
       >
-        Menu
+        Menú
       </button>
 
       {menuAbierto && (
@@ -100,6 +102,7 @@ function Contador() {
       />
 
       <main className="admin-main">
+        {seccion === "acceso" && <MiAcceso />}
         {seccion === "dashboard" && <Dashboard />}
         {seccion === "cuotas" && <Cuotas />}
         {seccion === "pagos" && <Pagos />}

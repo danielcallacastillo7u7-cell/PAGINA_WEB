@@ -8,8 +8,9 @@ export async function autenticar(req, res, next) {
   try { claims = jwt.verify(match[1], config.jwtSecret, { algorithms: ["HS256"] }); }
   catch { return res.status(401).json({ mensaje: "Sesión inválida o vencida." }); }
   try {
-    const { rows } = await pool.query("SELECT id, nombre, correo, rol FROM usuarios WHERE id = $1 AND estado = true", [claims.id]);
+    const { rows } = await pool.query("SELECT id, nombre, correo, rol, auth_version FROM usuarios WHERE id = $1 AND estado = true", [claims.id]);
     if (!rows[0]) return res.status(401).json({ mensaje: "Cuenta inactiva o inexistente." });
+    if ((claims.sv || 0) !== rows[0].auth_version) return res.status(401).json({mensaje:"Tu acceso cambió. Inicia sesión nuevamente."});
     req.usuario = rows[0];
     next();
   } catch (error) { next(error); }

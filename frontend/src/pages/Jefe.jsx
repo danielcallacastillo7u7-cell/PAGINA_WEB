@@ -3,7 +3,9 @@ import Comunidad from './Comunidad.jsx';
 import Mensajes from './Mensajes.jsx';
 import Reservas from './Reservas.jsx';
 import Solicitudes from './admin/Pagos.jsx';
-import Cuentas from './admin/Socios.jsx';
+import Cuentas from './CuentasAcceso.jsx';
+import MiAcceso from './MiAcceso.jsx';
+import EstadoSistema from './EstadoSistema.jsx';
 import { useState } from "react";
 
 import "./Panel.css";
@@ -46,6 +48,8 @@ function Jefe() {
       />
 
       <main className="admin-main">
+        {seccion === 'acceso' && <MiAcceso />}
+        {seccion === 'estado' && <EstadoSistema />}
         {seccion === 'padron' && <Padron />}
         {seccion === 'avisos' && <Comunidad gestion />}
         {seccion === 'mensajes' && <Mensajes />}

@@ -1,6 +1,6 @@
 import { pool } from "../db.js";
 const required = {
-  usuarios: "id nombre correo password_hash rol estado fecha_creacion",
+  usuarios: "id nombre correo password_hash rol estado fecha_creacion auth_version",
   socios_club: "id usuario_id numero_excel direccion_tipo zona lote tipo nombre cuota_base estado fecha_creacion importacion_id",
   cuotas_club: "id socio_id anio mes monto estado fecha_vencimiento fecha_creacion",
   pagos_cuotas: "id cuota_id socio_id monto fecha_pago metodo_pago numero_recibo referencia comprobante_url estado observacion fecha_creacion fecha_revision",
@@ -11,6 +11,7 @@ const required = {
   avisos_club: "id titulo contenido autor_id activo fecha",
   mensajes_contacto: "id nombre correo asunto mensaje atendido fecha",
   reservas_club: "id usuario_id espacio fecha hora_inicio hora_fin estado",
+  codigos_acceso: "usuario_id nonce codigo_hash intentos vence usado",
   auditoria_club: "id usuario_id accion entidad entidad_id datos fecha",
 };
 try {

@@ -10,8 +10,8 @@ const originalQuery = pool.query;
 let calls = [];
 pool.query = async (sql, values) => {
   calls.push(sql);
-  if (sql.startsWith('SELECT id, nombre, correo, rol FROM usuarios')) {
-    return { rows: roles[values[0]] ? [{ id: values[0], rol: roles[values[0]], nombre: 'Test', correo: 'test@example.com' }] : [] };
+  if (sql.startsWith('SELECT id, nombre, correo, rol, auth_version FROM usuarios')) {
+    return { rows: roles[values[0]] ? [{ id: values[0], rol: roles[values[0]], auth_version:0, nombre: 'Test', correo: 'test@example.com' }] : [] };
   }
   throw new Error('Unexpected database access');
 };

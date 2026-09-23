@@ -58,7 +58,7 @@ function Login() {
       entrarPorRol(resultado.usuario);
     } catch (error) {
       console.error(error);
-      alert("No se pudo conectar con el servidor.");
+      alert(error.message || "No se pudo conectar con el servidor.");
     } finally {
       setCargando(false);
     }

@@ -1,14 +1,13 @@
+import { uploads } from '../services/uploads.js';
 import { Router } from "express";
 import multer from "multer";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile, unlink } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { pool } from "../db.js";
 import { roles } from "../middleware/auth.js";
 
 const router = Router();
-const uploads = fileURLToPath(new URL("../uploads/", import.meta.url));
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024, files: 1 } });
 const staff = roles("admin", "jefe", "contador");
 router.get("/", staff, async (req, res) => {

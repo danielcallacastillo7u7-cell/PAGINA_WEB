@@ -9,6 +9,21 @@ catch (error) {
   process.exit(1);
 }
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor en puerto ${PORT}`);
 });
+
+let cerrando = false;
+async function cerrar() {
+  if (cerrando) return;
+  cerrando = true;
+  const limite = setTimeout(() => process.exit(1), 15000);
+  limite.unref();
+  server.close(async () => {
+    await pool.end();
+    clearTimeout(limite);
+    process.exit(0);
+  });
+}
+process.on('SIGTERM', cerrar);
+process.on('SIGINT', cerrar);

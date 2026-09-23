@@ -55,6 +55,7 @@ function UsuarioSidebar({
         >
           Avisos
         </button>
+        <button className={seccionActiva === "acceso" ? "activo" : ""} onClick={() => cambiarSeccion("acceso")}>Mi acceso</button>
       </nav>
 
       <a className="usuario-salir" href="/login" onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("usuario"); }}>
