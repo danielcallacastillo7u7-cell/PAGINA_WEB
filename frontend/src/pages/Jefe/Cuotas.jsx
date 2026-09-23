@@ -794,7 +794,7 @@ function Cuotas() {
 
                           S/{" "}
                           {dinero(
-                            cuota.monto
+                            cuota.saldo
                           )}
 
                         </strong>

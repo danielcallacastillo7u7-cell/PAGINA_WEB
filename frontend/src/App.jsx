@@ -1,3 +1,4 @@
+import Contacto from "./Contacto.jsx";
 import "./App.css";
 
 function App() {
@@ -60,7 +61,7 @@ function App() {
             <div className="card-contenido">
               <h3>Piscina</h3>
               <p>Zona amplia para relajarse, nadar y compartir en familia.</p>
-              <button>Ver detalles</button>
+              <a className="btn-principal" href="#contacto">Consultar disponibilidad</a>
             </div>
           </article>
 
@@ -72,7 +73,7 @@ function App() {
             <div className="card-contenido">
               <h3>Zona de juegos</h3>
               <p>Espacios seguros para niños, actividades y entretenimiento.</p>
-              <button>Ver detalles</button>
+              <a className="btn-principal" href="#contacto">Consultar disponibilidad</a>
             </div>
           </article>
 
@@ -84,7 +85,7 @@ function App() {
             <div className="card-contenido">
               <h3>Áreas verdes</h3>
               <p>Jardines y zonas tranquilas para descansar o caminar.</p>
-              <button>Ver detalles</button>
+              <a className="btn-principal" href="#contacto">Consultar disponibilidad</a>
             </div>
           </article>
 
@@ -96,7 +97,7 @@ function App() {
             <div className="card-contenido">
               <h3>Zona deportiva</h3>
               <p>Canchas y espacios para entrenar, jugar y mantenerse activo.</p>
-              <button>Ver detalles</button>
+              <a className="btn-principal" href="#contacto">Consultar disponibilidad</a>
             </div>
           </article>
 
@@ -108,7 +109,7 @@ function App() {
             <div className="card-contenido">
               <h3>Salón de eventos</h3>
               <p>Ambiente ideal para reuniones, celebraciones y actividades.</p>
-              <button>Ver detalles</button>
+              <a className="btn-principal" href="#contacto">Consultar disponibilidad</a>
             </div>
           </article>
 
@@ -120,7 +121,7 @@ function App() {
             <div className="card-contenido">
               <h3>Seguridad</h3>
               <p>Control de acceso y ambiente seguro para los residentes.</p>
-              <button>Ver detalles</button>
+              <a className="btn-principal" href="#contacto">Consultar disponibilidad</a>
             </div>
           </article>
         </div>
@@ -163,53 +164,7 @@ function App() {
         </div>
       </section>
 
-      <section className="contacto" id="contacto">
-        <div className="contacto-info">
-          <span className="etiqueta">Contacto</span>
-          <h2>¿Quieres más información?</h2>
-          <p>
-            Escríbenos para conocer membresías, horarios, normas del club,
-            reservas de espacios o atención para propietarios.
-          </p>
-
-          <div className="contacto-datos">
-            <a href="tel:+51999999999">
-              <strong>Teléfono</strong>
-              <span>+51 999 999 999</span>
-            </a>
-
-            <a href="mailto:contacto@clubresidencial.com">
-              <strong>Correo</strong>
-              <span>contacto@clubresidencial.com</span>
-            </a>
-
-            <a
-              href="https://wa.me/51999999999"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <strong>WhatsApp</strong>
-              <span>Enviar mensaje</span>
-            </a>
-          </div>
-        </div>
-
-        <form className="contacto-form">
-          <input type="text" placeholder="Tu nombre" />
-          <input type="email" placeholder="Tu correo" />
-
-          <select>
-            <option>Quiero información del club</option>
-            <option>Quiero reservar un espacio</option>
-            <option>Soy propietario</option>
-            <option>Necesito soporte</option>
-          </select>
-
-          <textarea placeholder="Escribe tu mensaje" rows="5"></textarea>
-
-          <button type="submit">Enviar mensaje</button>
-        </form>
-      </section>
+      <Contacto />
 
       <footer className="footer">
         <p>© 2026 Club Residencial. Todos los derechos reservados.</p>

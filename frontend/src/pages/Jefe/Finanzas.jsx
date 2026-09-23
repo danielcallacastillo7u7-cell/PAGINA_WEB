@@ -45,7 +45,7 @@ const CATEGORIAS_EGRESO = [
 ];
 
 
-function Finanzas() {
+function Finanzas({ puedeAnular = false }) {
   const ahora =
     new Date();
 
@@ -377,7 +377,7 @@ function Finanzas() {
     async (movimiento) => {
       const confirmar =
         window.confirm(
-          `¿Eliminar "${movimiento.concepto}" por S/ ${dinero(movimiento.monto)}?`
+          `¿Anular "${movimiento.concepto}" por S/ ${dinero(movimiento.monto)}?`
         );
 
 
@@ -386,12 +386,16 @@ function Finanzas() {
       }
 
 
+      const motivo=window.prompt("Motivo de anulación (se conservará el registro):");
+      if(!motivo?.trim())return;
       try {
         const respuesta =
           await apiFetch(
             `/api/finanzas/${movimiento.id}`,
             {
               method: "DELETE",
+              headers: {"Content-Type":"application/json"},
+              body: JSON.stringify({motivo}),
             }
           );
 
@@ -420,7 +424,7 @@ function Finanzas() {
         );
 
         alert(
-          "No se pudo eliminar el movimiento."
+          "No se pudo anular el movimiento."
         );
       }
     };
@@ -1073,13 +1077,15 @@ function Finanzas() {
 
                         <button
                           className="btn-tabla peligro"
+                          disabled={!puedeAnular}
+                          title={puedeAnular ? 'Anular conservando el registro' : 'Solo el jefe puede anular movimientos'}
                           onClick={() =>
                             eliminarMovimiento(
                               movimiento
                             )
                           }
                         >
-                          Eliminar
+                          Anular
                         </button>
 
                       </td>

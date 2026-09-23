@@ -1,4 +1,4 @@
-import { apiFetch } from "../../api.js";
+import { apiFetch, descargarComprobante } from "../../api.js";
 import {
   useCallback,
   useEffect,
@@ -21,7 +21,17 @@ const MESES = [
   "Diciembre",
 ];
 
-function Pagos() {
+function Pagos({ puedeAnular = false }) {
+  async function anularPago(pago) {
+    const motivo = window.prompt('Motivo de anulación del pago:');
+    if (!motivo?.trim()) return;
+    try {
+      const r = await apiFetch(`/api/pagos/${pago.id}/anular`, {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({motivo})});
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.mensaje);
+      await Promise.all([cargarPagos(),cargarResumen(),cargarCuotasPendientes()]);
+    } catch (error) { window.alert(error.message); }
+  }
   const hoy =
     new Date()
       .toISOString()
@@ -219,8 +229,9 @@ function Pagos() {
 
 
   useEffect(() => {
-    cargarResumen();
-    cargarCuotasPendientes();
+    const initial = setTimeout(() => { cargarResumen();
+    cargarCuotasPendientes(); }, 0);
+    return () => clearTimeout(initial);
   }, []);
 
 
@@ -244,7 +255,7 @@ function Pagos() {
 
           monto:
             cuota
-              ? cuota.monto
+              ? cuota.disponible
               : "",
         })
       );
@@ -614,7 +625,7 @@ function Pagos() {
                       {cuota.anio}
                       {" - S/ "}
                       {dinero(
-                        cuota.monto
+                        cuota.disponible
                       )}
 
                     </option>
@@ -1030,6 +1041,8 @@ function Pagos() {
 
                       <td>
 
+                        {pago.comprobante_url && <button onClick={()=>descargarComprobante(`/api/pagos/${pago.id}/comprobante`).catch(e=>window.alert(e.message))}>Comprobante</button>}
+                        {puedeAnular && pago.estado === 'aprobado' && <button onClick={()=>anularPago(pago)}>Anular</button>}
                         {pago.estado ===
                           "pendiente" ? (
 

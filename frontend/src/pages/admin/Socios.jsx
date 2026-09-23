@@ -34,7 +34,8 @@ function Socios() {
   }
 
   useEffect(() => {
-    cargarSocios();
+    const initial = setTimeout(() => { cargarSocios(); }, 0);
+    return () => clearTimeout(initial);
   }, []);
 
   function cambiarDato(e) {

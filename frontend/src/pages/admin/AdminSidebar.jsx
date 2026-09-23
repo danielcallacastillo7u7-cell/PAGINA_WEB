@@ -19,7 +19,7 @@ function AdminSidebar({
       </button>
 
       <div className="sidebar-logo">
-        <h2>ClubCuotas</h2>
+        <h2>Club Catarindo</h2>
         <span>Panel administrador</span>
       </div>
 
@@ -28,18 +28,19 @@ function AdminSidebar({
           className={seccionAdmin === "socios" ? "activo" : ""}
           onClick={() => cambiarSeccion("socios")}
         >
-          Socios
+          Cuentas de socios
         </button>
 
         <button
           className={seccionAdmin === "pagos" ? "activo" : ""}
           onClick={() => cambiarSeccion("pagos")}
         >
-          Pagos
+          Comprobantes anteriores
         </button>
+        {[['padron','Padrón'],['cuotas-pagos','Pagos de cuotas'],['avisos','Avisos'],['mensajes','Mensajes'],['reservas','Reservas']].map(([id,label])=><button key={id} className={seccionAdmin===id?"activo":""} onClick={()=>cambiarSeccion(id)}>{label}</button>)}
       </nav>
 
-      <a className="cerrar-sesion" href="/">
+      <a className="cerrar-sesion" href="/login" onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("usuario"); }}>
         Cerrar sesión
       </a>
     </aside>

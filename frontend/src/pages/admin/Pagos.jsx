@@ -21,7 +21,8 @@ function Pagos() {
   }
 
   useEffect(() => {
-    cargarPagos();
+    const initial = setTimeout(() => { cargarPagos(); }, 0);
+    return () => clearTimeout(initial);
   }, []);
 
   function pedirMonto(mensaje) {

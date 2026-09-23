@@ -1,5 +1,7 @@
 # Revisión del sistema Club Catarindo — 18 de septiembre de 2026
 
+> Registro de la primera revisión. Para las correcciones posteriores y pendientes vigentes, consultar **ESTADO_ACTUAL.md**.
+
 ## Diagnóstico confirmado
 
 El repositorio no tenía `backend/.env` y el proceso tampoco tenía `DATABASE_URL` configurado. `pg` podía usar su destino por defecto (localhost:5432). Se creó el archivo local con la conexión proporcionada y un secreto JWT aleatorio. La conexión TLS a Neon se comprobó correctamente. Los secretos quedan excluidos de Git.

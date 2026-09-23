@@ -16,7 +16,7 @@ function UsuarioSidebar({
       </button>
 
       <div className="usuario-logo">
-        <h2>ClubCuotas</h2>
+        <h2>Club Catarindo</h2>
         <span>Portal del socio</span>
       </div>
 
@@ -57,7 +57,7 @@ function UsuarioSidebar({
         </button>
       </nav>
 
-      <a className="usuario-salir" href="/">
+      <a className="usuario-salir" href="/login" onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("usuario"); }}>
         Cerrar sesión
       </a>
     </aside>

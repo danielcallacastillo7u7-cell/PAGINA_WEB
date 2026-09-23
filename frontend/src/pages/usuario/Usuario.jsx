@@ -2,9 +2,10 @@ import { useState } from "react";
 import "../Usuario.css";
 import UsuarioSidebar from "./UsuarioSidebar.jsx";
 import MiCuenta from "./MiCuenta.jsx";
-import MisCuotas from "./MisCuotas.jsx";
-import ModuloVacio from "./ModuloVacio.jsx";
-import MisPagos from "./MisPagos.jsx";
+import MisCuotas from "./CuotasPortal.jsx";
+import Comunidad from "../Comunidad.jsx";
+import Reservas from "../Reservas.jsx";
+import MisPagos from "./PagosPortal.jsx";
 
 function Usuario() {
   const [seccionActiva, setSeccionActiva] = useState("cuenta");
@@ -33,7 +34,8 @@ function Usuario() {
         {seccionActiva === "cuenta" && <MiCuenta usuario={usuario} />}
         {seccionActiva === "cuotas" && <MisCuotas />}
         {seccionActiva === "pagos" && <MisPagos />}
-        {seccionActiva === "avisos" && <ModuloVacio titulo="Avisos" />}
+        {seccionActiva === "reservas" && <Reservas />}
+        {seccionActiva === "avisos" && <Comunidad />}
       </main>
     </div>
   );

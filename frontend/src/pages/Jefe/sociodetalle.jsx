@@ -19,15 +19,11 @@ function SocioDetalle({
 
 
   useEffect(() => {
-    cargarDetalle();
-  }, [socioId]);
-
-
+  let active = true;
   const cargarDetalle =
     async () => {
       try {
-        setCargando(true);
-        setError("");
+
 
         const respuesta =
           await apiFetch(
@@ -44,20 +40,22 @@ function SocioDetalle({
           );
         }
 
-        setDatos(resultado);
+        if (active) setDatos(resultado);
 
       } catch (error) {
         console.error(error);
 
-        setError(
+        if (active) setError(
           "No se pudo obtener el detalle del socio."
         );
 
       } finally {
-        setCargando(false);
+        if (active) setCargando(false);
       }
     };
-
+    cargarDetalle();
+    return () => { active = false; };
+  }, [socioId]);
 
   const dinero =
     (valor) =>

@@ -19,15 +19,16 @@ function JefeSidebar({
 
   return (
     <aside
-      className={`admin-sidebar ${menuAbierto ? "activo" : ""}`}
+      className={`admin-sidebar ${menuAbierto ? "abierto" : ""}`}
     >
 
-      <div className="admin-sidebar-logo">
+      <button className="admin-cerrar-menu-btn" onClick={() => setMenuAbierto(false)}>Cerrar</button>
+      <div className="sidebar-logo">
         <h2>Club Catarindo</h2>
         <p>Panel del Jefe</p>
       </div>
 
-      <nav className="admin-sidebar-menu">
+      <nav className="sidebar-menu">
 
         <button
           className={
@@ -120,12 +121,13 @@ function JefeSidebar({
           Migrar datos históricos
         </button>
 
+        {[['padron','Gestionar padrón'],['cuentas','Cuentas de socios'],['solicitudes','Comprobantes anteriores'],['avisos','Avisos'],['mensajes','Mensajes'],['reservas','Reservas']].map(([id,label]) => <button key={id} className={seccion===id?'activo':''} onClick={()=>cambiarSeccion(id)}>{label}</button>)}
       </nav>
 
       <div className="admin-sidebar-footer">
 
         <button
-          className="btn-cerrar-sesion"
+          className="cerrar-sesion"
           onClick={cerrarSesion}
         >
           Cerrar sesión

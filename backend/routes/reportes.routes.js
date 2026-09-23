@@ -78,17 +78,11 @@ router.get(
             ) AS monto_generado,
 
             COALESCE(
-              SUM(monto)
-              FILTER (
-                WHERE estado IN (
-                  'pendiente',
-                  'vencido'
-                )
-              ),
+              SUM(saldo),
               0
             ) AS monto_por_cobrar
 
-          FROM cuotas_club
+          FROM saldos_cuotas_club
 
           WHERE
             anio = $1
@@ -172,7 +166,7 @@ router.get(
             )::int
               AS cantidad_egresos
 
-          FROM movimientos_financieros
+          FROM movimientos_vigentes_club
 
           WHERE
             EXTRACT(
@@ -405,7 +399,7 @@ router.get(
             referencia,
             observacion
 
-          FROM movimientos_financieros
+          FROM movimientos_vigentes_club
 
           WHERE
             EXTRACT(
@@ -747,7 +741,7 @@ router.get(
               metodo_pago,
               numero_recibo
 
-            FROM movimientos_financieros
+            FROM movimientos_vigentes_club
 
             WHERE
               EXTRACT(
@@ -1028,7 +1022,7 @@ router.get(
                 0
               ) AS egresos
 
-            FROM movimientos_financieros
+            FROM movimientos_vigentes_club
 
             WHERE
               EXTRACT(

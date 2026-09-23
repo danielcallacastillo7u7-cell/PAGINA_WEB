@@ -2,6 +2,7 @@ import { apiFetch } from "../../api.js";
 import { useState } from "react";
 
 function ImportarExcel() {
+  const [aceptar, setAceptar] = useState(false);
   const [archivo, setArchivo] = useState(null);
   const [resultado, setResultado] = useState(null);
   const [cargando, setCargando] = useState(false);
@@ -16,6 +17,7 @@ function ImportarExcel() {
     const formData = new FormData();
 
     formData.append("archivo", archivo);
+    formData.append("aceptarAdvertencias", String(aceptar));
 
     try {
       setCargando(true);
@@ -55,6 +57,8 @@ function ImportarExcel() {
   };
 
   const confirmarImportacion = async () => {
+    if (!resultado) { alert("Analiza primero el archivo."); return; }
+    if (resultado.advertencias?.length && !aceptar) { alert("Revisa y acepta las advertencias antes de confirmar."); return; }
     if (!archivo) {
       alert("Selecciona un archivo Excel.");
       return;
@@ -71,6 +75,7 @@ function ImportarExcel() {
     const formData = new FormData();
 
     formData.append("archivo", archivo);
+    formData.append("aceptarAdvertencias", String(aceptar));
 
     try {
       setImportando(true);
@@ -98,7 +103,8 @@ function ImportarExcel() {
         `Importación completada correctamente.
 
 Socios importados: ${datos.socios}
-Movimientos importados: ${datos.movimientos}`
+Movimientos importados: ${datos.movimientos}
+Ya existentes: ${datos.movimientosExistentes || 0} movimientos y ${datos.sociosExistentes || 0} socios`
       );
     } catch (error) {
       console.error(
@@ -123,15 +129,18 @@ Movimientos importados: ${datos.movimientos}`
     );
 
     setResultado(null);
+    setAceptar(false);
   };
 
   const limpiarArchivo = () => {
     setArchivo(null);
     setResultado(null);
+    setAceptar(false);
   };
 
   return (
     <>
+      {resultado?.advertencias?.length > 0 && <section className="panel-box club-panel"><h2>Revisión necesaria</h2><p>Se importarán los movimientos válidos, excluyendo saldos y totales. Las deudas históricas no se convierten automáticamente en cuotas.</p><ul>{resultado.advertencias.map((a,i)=><li key={i}>{a}</li>)}</ul><label><input type="checkbox" checked={aceptar} onChange={e=>setAceptar(e.target.checked)}/> He revisado las diferencias y acepto importar solo las filas válidas.</label></section>}
       <header className="admin-header">
         <div>
           <span>

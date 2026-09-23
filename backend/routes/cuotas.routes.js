@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { fechaValida } from '../services/contabilidad.js';
 import { pool } from "../db.js";
 
 const router = Router();
@@ -83,7 +84,7 @@ router.get("/", async (req, res) => {
           c.socio_id,
           c.anio,
           c.mes,
-          c.monto,
+          c.monto, c.saldo, c.pagado,
           c.estado,
           c.fecha_vencimiento,
           c.fecha_creacion,
@@ -93,7 +94,7 @@ router.get("/", async (req, res) => {
           s.lote,
           s.tipo
 
-        FROM cuotas_club c
+        FROM saldos_cuotas_club c
 
         INNER JOIN socios_club s
           ON s.id = c.socio_id
@@ -182,23 +183,16 @@ router.get(
             ) AS total_generado,
 
             COALESCE(
-              SUM(monto) FILTER (
-                WHERE estado = 'pagado'
-              ),
+              SUM(pagado),
               0
             ) AS total_pagado,
 
             COALESCE(
-              SUM(monto) FILTER (
-                WHERE estado IN (
-                  'pendiente',
-                  'vencido'
-                )
-              ),
+              SUM(saldo),
               0
             ) AS total_por_cobrar
 
-          FROM cuotas_club
+          FROM saldos_cuotas_club
 
           WHERE anio = $1
           `,
@@ -285,7 +279,7 @@ router.post(
 
       if (
         !Number.isInteger(Number(anio)) || Number(anio) < 1900 || Number(anio) > 2200 ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(fechaVencimiento) || Number.isNaN(Date.parse(fechaVencimiento)) ||
+        !fechaValida(fechaVencimiento) ||
         !Number.isInteger(Number(mes)) || Number(mes) < 1 ||
         Number(mes) > 12
       ) {
@@ -442,7 +436,7 @@ router.get(
             c.id,
             c.anio,
             c.mes,
-            c.monto,
+            c.monto, c.saldo, c.pagado,
             c.estado,
             c.fecha_vencimiento,
 
@@ -459,7 +453,7 @@ router.get(
             p.numero_recibo,
             p.estado AS estado_pago
 
-          FROM cuotas_club c
+          FROM saldos_cuotas_club c
 
           INNER JOIN socios_club s
             ON s.id = c.socio_id
@@ -502,8 +496,9 @@ router.get(
 
         monto_pagado:
           Number(
-            cuota.monto_pagado || 0
+            cuota.pagado || 0
           ),
+        pagos: resultado.rows.filter(p => p.pago_id).map(p => ({id:p.pago_id,monto:Number(p.monto_pagado),fecha_pago:p.fecha_pago,metodo_pago:p.metodo_pago,numero_recibo:p.numero_recibo})),
       });
 
     } catch (error) {

@@ -1,6 +1,7 @@
 import { apiFetch } from "../../api.js";
 import {
   useEffect,
+  useCallback,
   useState,
 } from "react";
 
@@ -41,7 +42,7 @@ function Socios() {
 
 
   const cargarSocios =
-    async () => {
+    useCallback(async () => {
       try {
         setCargando(true);
         setError("");
@@ -97,7 +98,7 @@ function Socios() {
       } finally {
         setCargando(false);
       }
-    };
+    }, [buscar,zona,estado]);
 
 
   const cargarResumen =
@@ -125,7 +126,8 @@ function Socios() {
 
 
   useEffect(() => {
-    cargarResumen();
+    const initial = setTimeout(() => { cargarResumen(); }, 0);
+    return () => clearTimeout(initial);
   }, []);
 
 
@@ -141,11 +143,7 @@ function Socios() {
     return () =>
       clearTimeout(temporizador);
 
-  }, [
-    buscar,
-    zona,
-    estado,
-  ]);
+  }, [cargarSocios]);
 
 
   const cambiarEstado =

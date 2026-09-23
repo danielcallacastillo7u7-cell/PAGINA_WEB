@@ -55,7 +55,7 @@ router.get("/resumen", async (req, res) => {
 
       FROM (
         SELECT id, fecha, tipo, direccion, concepto, numero_recibo, monto
-        FROM movimientos_financieros
+        FROM movimientos_vigentes_club
         UNION ALL
         SELECT -p.id, p.fecha_pago, 'ingreso',
           CONCAT(s.zona, '-', s.lote), 'Cuota ' || c.mes || '/' || c.anio,
@@ -100,7 +100,7 @@ router.get("/resumen", async (req, res) => {
 
       FROM (
         SELECT id, fecha, tipo, direccion, concepto, numero_recibo, monto
-        FROM movimientos_financieros
+        FROM movimientos_vigentes_club
         UNION ALL
         SELECT -p.id, p.fecha_pago, 'ingreso',
           CONCAT(s.zona, '-', s.lote), 'Cuota ' || c.mes || '/' || c.anio,
@@ -128,7 +128,7 @@ router.get("/resumen", async (req, res) => {
 
       FROM (
         SELECT id, fecha, tipo, direccion, concepto, numero_recibo, monto
-        FROM movimientos_financieros
+        FROM movimientos_vigentes_club
         UNION ALL
         SELECT -p.id, p.fecha_pago, 'ingreso',
           CONCAT(s.zona, '-', s.lote), 'Cuota ' || c.mes || '/' || c.anio,
@@ -242,7 +242,7 @@ router.get("/mensual", async (req, res) => {
 
       FROM (
         SELECT id, fecha, tipo, direccion, concepto, numero_recibo, monto
-        FROM movimientos_financieros
+        FROM movimientos_vigentes_club
         UNION ALL
         SELECT -p.id, p.fecha_pago, 'ingreso',
           CONCAT(s.zona, '-', s.lote), 'Cuota ' || c.mes || '/' || c.anio,

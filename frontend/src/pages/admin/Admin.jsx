@@ -1,3 +1,8 @@
+import Padron from '../Padron.jsx';
+import Comunidad from '../Comunidad.jsx';
+import Mensajes from '../Mensajes.jsx';
+import Reservas from '../Reservas.jsx';
+import PagosCuotas from '../Jefe/Pagos.jsx';
 import { useState } from "react";
 import "../Panel.css";
 import AdminSidebar from "./AdminSidebar.jsx";
@@ -32,6 +37,12 @@ function Admin() {
       />
 
       <main className="admin-main">
+        {seccionAdmin === 'padron' && <Padron />}
+        {seccionAdmin === 'avisos' && <Comunidad gestion />}
+        {seccionAdmin === 'mensajes' && <Mensajes />}
+        {seccionAdmin === 'reservas' && <Reservas gestion />}
+        {seccionAdmin === 'cuotas-pagos' && <PagosCuotas />}
+
         {seccionAdmin === "socios" && <Socios />}
         {seccionAdmin === "pagos" && <Pagos />}
       </main>

@@ -19,13 +19,14 @@ function ContadorSidebar({ seccion, setSeccion, menuAbierto, setMenuAbierto }) {
   }
 
   return (
-    <aside className={`admin-sidebar ${menuAbierto ? "activo" : ""}`}>
-      <div className="admin-sidebar-logo">
+    <aside className={`admin-sidebar ${menuAbierto ? "abierto" : ""}`}>
+      <button className="admin-cerrar-menu-btn" onClick={() => setMenuAbierto(false)}>Cerrar</button>
+      <div className="sidebar-logo">
         <h2>Club Catarindo</h2>
         <p>Panel del Contador</p>
       </div>
 
-      <nav className="admin-sidebar-menu">
+      <nav className="sidebar-menu">
         <button
           className={seccion === "dashboard" ? "activo" : ""}
           onClick={() => cambiarSeccion("dashboard")}
@@ -63,7 +64,7 @@ function ContadorSidebar({ seccion, setSeccion, menuAbierto, setMenuAbierto }) {
       </nav>
 
       <div className="admin-sidebar-footer">
-        <button className="btn-cerrar-sesion" onClick={cerrarSesion}>
+        <button className="cerrar-sesion" onClick={cerrarSesion}>
           Cerrar sesion
         </button>
       </div>
@@ -86,7 +87,7 @@ function Contador() {
 
       {menuAbierto && (
         <div
-          className="admin-sidebar-overlay"
+          className="admin-menu-overlay"
           onClick={() => setMenuAbierto(false)}
         />
       )}

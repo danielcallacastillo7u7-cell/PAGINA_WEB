@@ -1,3 +1,9 @@
+import Padron from './Padron.jsx';
+import Comunidad from './Comunidad.jsx';
+import Mensajes from './Mensajes.jsx';
+import Reservas from './Reservas.jsx';
+import Solicitudes from './admin/Pagos.jsx';
+import Cuentas from './admin/Socios.jsx';
 import { useState } from "react";
 
 import "./Panel.css";
@@ -27,7 +33,7 @@ function Jefe() {
 
       {menuAbierto && (
         <div
-          className="admin-sidebar-overlay"
+          className="admin-menu-overlay"
           onClick={() => setMenuAbierto(false)}
         />
       )}
@@ -40,6 +46,13 @@ function Jefe() {
       />
 
       <main className="admin-main">
+        {seccion === 'padron' && <Padron />}
+        {seccion === 'avisos' && <Comunidad gestion />}
+        {seccion === 'mensajes' && <Mensajes />}
+        {seccion === 'reservas' && <Reservas gestion />}
+        {seccion === 'solicitudes' && <Solicitudes />}
+        {seccion === 'cuentas' && <Cuentas />}
+
 
         {seccion === "dashboard" && (
           <Dashboard />
@@ -54,11 +67,11 @@ function Jefe() {
         )}
 
         {seccion === "pagos" && (
-          <Pagos />
+          <Pagos puedeAnular />
         )}
 
         {seccion === "finanzas" && (
-          <Finanzas />
+          <Finanzas puedeAnular />
         )}
 
         {seccion === "reportes" && (

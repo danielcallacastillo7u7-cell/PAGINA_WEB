@@ -48,7 +48,7 @@ function Dashboard() {
     }, []);
 
   useEffect(() => {
-    cargarDashboard();
+    const initial = setTimeout(cargarDashboard, 0);
 
     /*
       Actualización automática.
@@ -62,8 +62,10 @@ function Dashboard() {
       30000
     );
 
-    return () =>
+    return () => {
       clearInterval(intervalo);
+      clearTimeout(initial);
+    };
 
   }, [cargarDashboard]);
 

@@ -1,3 +1,4 @@
+import "./Club.css";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import React from "react";
 import ReactDOM from "react-dom/client";

@@ -1,3 +1,5 @@
+import { roles } from '../middleware/auth.js';
+import { transaccion, auditar, fallo, centimos, fechaValida } from '../services/contabilidad.js';
 import { Router } from "express";
 import { pool } from "../db.js";
 
@@ -94,7 +96,7 @@ router.get("/", async (req, res) => {
           observacion,
           fecha_creacion
 
-        FROM movimientos_financieros
+        FROM movimientos_vigentes_club
 
         ${where}
 
@@ -180,7 +182,7 @@ router.get(
               0
             ) AS egresos
 
-          FROM movimientos_financieros
+          FROM movimientos_vigentes_club
 
           WHERE
             EXTRACT(
@@ -292,7 +294,7 @@ router.get(
    REGISTRAR MOVIMIENTO
 ========================================================= */
 
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
   try {
     const {
       fecha,
@@ -308,7 +310,7 @@ router.post("/", async (req, res) => {
 
 
     if (
-      !fecha ||
+      !fechaValida(fecha) ||
       !tipo ||
       !categoria ||
       !concepto ||
@@ -350,6 +352,7 @@ router.post("/", async (req, res) => {
     }
 
 
+    centimos(monto);
     const resultado =
       await pool.query(
         `
@@ -404,6 +407,7 @@ router.post("/", async (req, res) => {
     });
 
   } catch (error) {
+    if(error.status) return next(error);
     console.error(
       "Error registrando movimiento:",
       error
@@ -421,51 +425,14 @@ router.post("/", async (req, res) => {
    ELIMINAR MOVIMIENTO
 ========================================================= */
 
-router.delete(
-  "/:id",
-  async (req, res) => {
-    try {
-      const resultado =
-        await pool.query(
-          `
-          DELETE FROM movimientos_financieros
-          WHERE id = $1
-          RETURNING *
-          `,
-          [req.params.id]
-        );
-
-
-      if (
-        resultado.rows.length === 0
-      ) {
-        return res
-          .status(404)
-          .json({
-            mensaje:
-              "Movimiento no encontrado.",
-          });
-      }
-
-
-      res.json({
-        mensaje:
-          "Movimiento eliminado correctamente.",
-      });
-
-    } catch (error) {
-      console.error(
-        "Error eliminando movimiento:",
-        error
-      );
-
-      res.status(500).json({
-        mensaje:
-          "No se pudo eliminar el movimiento.",
-      });
-    }
-  }
-);
-
-
+router.delete('/:id', roles('jefe'), async(req,res)=>{
+ const motivo=String(req.body?.motivo||'').trim();
+ if(!motivo)throw fallo(400,'Indica el motivo de anulación.');
+ await transaccion(async db=>{
+  const r=await db.query('SELECT * FROM movimientos_financieros WHERE id=$1 AND anulado=false FOR UPDATE',[req.params.id]);
+  if(!r.rows[0])throw fallo(404,'Movimiento no encontrado.');
+  await auditar(db,req.usuario.id,'anular','movimiento',Number(req.params.id),{motivo,registro:r.rows[0]});
+  await db.query('UPDATE movimientos_financieros SET anulado=true WHERE id=$1',[req.params.id]);
+ });res.json({mensaje:'Movimiento anulado con constancia en auditoría.'});
+});
 export default router;

@@ -1,3 +1,5 @@
+import { roles } from '../middleware/auth.js';
+import { transaccion, auditar, fallo, centimos } from '../services/contabilidad.js';
 import { Router } from "express";
 import { pool } from "../db.js";
 
@@ -59,7 +61,7 @@ router.get("/", async (req, res) => {
       `
       SELECT
         id,
-        numero_excel,
+        usuario_id, numero_excel,
         direccion_tipo,
         zona,
         lote,
@@ -153,7 +155,7 @@ router.get("/:id", async (req, res) => {
         `
         SELECT
           id,
-          numero_excel,
+          usuario_id, numero_excel,
           direccion_tipo,
           zona,
           lote,
@@ -215,7 +217,7 @@ router.get("/:id", async (req, res) => {
           monto,
           hoja_excel
 
-        FROM movimientos_financieros
+        FROM movimientos_vigentes_club
 
         WHERE
           UPPER(
@@ -368,4 +370,24 @@ router.patch(
 );
 
 
+router.get('/cuentas/disponibles', roles('jefe','admin'), async(_req,res)=>res.json((await pool.query("SELECT id,nombre,correo FROM usuarios WHERE rol='usuario' AND estado=true ORDER BY nombre")).rows));
+async function guardarSocio(req,res) {
+ const {nombre,zona,lote,tipo='socio',cuota_base,usuario_id}=req.body||{};
+ if(![nombre,zona,lote].every(v=>typeof v==='string'&&v.trim()&&v.length<=160))throw fallo(400,'Nombre, zona y lote son obligatorios.');
+ const cuota=centimos(cuota_base)/100;
+ const vinculo=usuario_id ? Number(usuario_id) : null;
+ if(vinculo!==null&&!Number.isSafeInteger(vinculo))throw fallo(400,'Cuenta inválida.');
+ const socio=await transaccion(async db=>{
+  if(vinculo && !(await db.query("SELECT id FROM usuarios WHERE id=$1 AND rol='usuario' AND estado=true FOR SHARE",[vinculo])).rowCount)throw fallo(400,'Selecciona una cuenta activa de socio.');
+  const values=[nombre.trim(),zona.trim().toUpperCase(),lote.trim().toUpperCase(),tipo,cuota,vinculo];
+  let result;
+  if(req.params.id)result=await db.query('UPDATE socios_club SET nombre=$1,zona=$2,lote=$3,tipo=$4,cuota_base=$5,usuario_id=$6 WHERE id=$7 RETURNING *',[...values,req.params.id]);
+  else result=await db.query('INSERT INTO socios_club(nombre,zona,lote,tipo,cuota_base,usuario_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',values);
+  if(!result.rows[0])throw fallo(404,'Socio no encontrado.');
+  await auditar(db,req.usuario.id,req.params.id?'editar':'crear','socio',result.rows[0].id,{usuario_id:vinculo,cuota_base:cuota});
+  return result.rows[0];
+ });res.status(req.params.id?200:201).json({socio,mensaje:'Socio guardado.'});
+}
+router.post('/',guardarSocio);
+router.put('/:id',guardarSocio);
 export default router;

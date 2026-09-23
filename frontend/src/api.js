@@ -23,3 +23,7 @@ export async function abrirComprobante(id) {
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   } catch (error) { alert(error.message); }
 }
+
+export async function descargarComprobante(path) {
+ try {const r=await apiFetch(path);if(!r.ok)throw new Error('No se pudo obtener el comprobante.');const url=URL.createObjectURL(await r.blob());const a=document.createElement('a');a.href=url;a.download='comprobante';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}catch(e){alert(e.message);}
+}

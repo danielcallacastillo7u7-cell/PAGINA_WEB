@@ -162,7 +162,8 @@ function Reportes() {
 
 
   useEffect(() => {
-    cargarReporte();
+    const initial = setTimeout(() => { cargarReporte(); }, 0);
+    return () => clearTimeout(initial);
   }, [
     cargarReporte,
   ]);

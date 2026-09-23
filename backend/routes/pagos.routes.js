@@ -1,3 +1,7 @@
+import { registrarPago, revisarPago, transaccion, fallo } from '../services/contabilidad.js';
+import { roles } from '../middleware/auth.js';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 ﻿import { Router } from "express";
 import { pool } from "../db.js";
 
@@ -265,7 +269,7 @@ router.get(
             c.socio_id,
             c.anio,
             c.mes,
-            c.monto,
+            c.monto, c.saldo, c.pagado, c.disponible,
             c.estado,
             c.fecha_vencimiento,
 
@@ -274,16 +278,13 @@ router.get(
             s.lote,
             s.tipo
 
-          FROM cuotas_club c
+          FROM saldos_cuotas_club c
 
           INNER JOIN socios_club s
             ON s.id = c.socio_id
 
           WHERE
-            c.estado IN (
-              'pendiente',
-              'vencido'
-            )
+            c.disponible > 0
 
             ${filtro}
 
@@ -327,406 +328,16 @@ router.get(
    REGISTRAR PAGO
 ========================================================= */
 
-router.post(
-  "/",
-  async (req, res) => {
-    try {
-      const {
-        cuotaId,
-        monto,
-        fechaPago,
-        metodoPago,
-        numeroRecibo,
-        referencia = "",
-        observacion = "",
-      } = req.body;
-
-      if (
-        !cuotaId ||
-        !monto ||
-        !fechaPago ||
-        !metodoPago
-      ) {
-        return res
-          .status(400)
-          .json({
-            mensaje:
-              "Cuota, monto, fecha y método de pago son obligatorios.",
-          });
-      }
-
-      const cuotaResult =
-        await pool.query(
-          `
-          SELECT
-            c.id,
-            c.socio_id,
-            c.monto,
-            c.estado,
-
-            s.nombre
-
-          FROM cuotas_club c
-
-          INNER JOIN socios_club s
-            ON s.id = c.socio_id
-
-          WHERE c.id = $1
-          `,
-          [cuotaId]
-        );
-
-      if (
-        cuotaResult.rows.length === 0
-      ) {
-        return res
-          .status(404)
-          .json({
-            mensaje:
-              "La cuota seleccionada no existe.",
-          });
-      }
-
-      const cuota =
-        cuotaResult.rows[0];
-
-      if (
-        cuota.estado === "pagado"
-      ) {
-        return res
-          .status(400)
-          .json({
-            mensaje:
-              "Esta cuota ya se encuentra pagada.",
-          });
-      }
-
-      if (
-        !Number.isFinite(Number(monto)) || Number(monto) <= 0
-      ) {
-        return res
-          .status(400)
-          .json({
-            mensaje:
-              "El monto debe ser mayor que cero.",
-          });
-      }
-
-      const resultado =
-        await pool.query(
-          `
-          INSERT INTO pagos_cuotas (
-            cuota_id,
-            socio_id,
-            monto,
-            fecha_pago,
-            metodo_pago,
-            numero_recibo,
-            referencia,
-            estado,
-            observacion
-          )
-
-          VALUES (
-            $1,
-            $2,
-            $3,
-            $4,
-            $5,
-            $6,
-            $7,
-            'pendiente',
-            $8
-          )
-
-          RETURNING *
-          `,
-          [
-            cuotaId,
-            cuota.socio_id,
-            Number(monto),
-            fechaPago,
-            metodoPago,
-            numeroRecibo || null,
-            referencia || null,
-            observacion || null,
-          ]
-        );
-
-      res.status(201).json({
-        mensaje:
-          "Pago registrado correctamente y pendiente de aprobación.",
-
-        pago:
-          resultado.rows[0],
-      });
-
-    } catch (error) {
-      console.error(
-        "Error registrando pago:",
-        error
-      );
-
-      res.status(500).json({
-        mensaje:
-          "No se pudo registrar el pago.",
-      });
-    }
-  }
-);
-
-
-/* =========================================================
-   APROBAR PAGO
-========================================================= */
-
-router.patch(
-  "/:id/aprobar",
-  async (req, res) => {
-    const client =
-      await pool.connect();
-
-    try {
-      await client.query(
-        "BEGIN"
-      );
-
-      const pagoResult =
-        await client.query(
-          `
-          SELECT *
-          FROM pagos_cuotas
-          WHERE id = $1
-          FOR UPDATE
-          `,
-          [req.params.id]
-        );
-
-      if (
-        pagoResult.rows.length === 0
-      ) {
-        await client.query(
-          "ROLLBACK"
-        );
-
-        return res
-          .status(404)
-          .json({
-            mensaje:
-              "Pago no encontrado.",
-          });
-      }
-
-      const pago =
-        pagoResult.rows[0];
-
-      if (
-        pago.estado !==
-        "pendiente"
-      ) {
-        await client.query(
-          "ROLLBACK"
-        );
-
-        return res
-          .status(400)
-          .json({
-            mensaje:
-              "El pago ya fue revisado.",
-          });
-      }
-
-      await client.query("SELECT id FROM cuotas_club WHERE id = $1 FOR UPDATE", [pago.cuota_id]);
-
-      await client.query(
-        `
-        UPDATE pagos_cuotas
-
-        SET
-          estado = 'aprobado',
-          fecha_revision =
-            CURRENT_TIMESTAMP
-
-        WHERE id = $1
-        `,
-        [req.params.id]
-      );
-
-      /*
-        Sumamos únicamente pagos
-        aprobados de la cuota.
-      */
-
-      const totalResult =
-        await client.query(
-          `
-          SELECT
-            COALESCE(
-              SUM(monto),
-              0
-            ) AS total_pagado
-
-          FROM pagos_cuotas
-
-          WHERE
-            cuota_id = $1
-            AND estado = 'aprobado'
-          `,
-          [pago.cuota_id]
-        );
-
-      const cuotaResult =
-        await client.query(
-          `
-          SELECT
-            monto
-          FROM cuotas_club
-          WHERE id = $1
-          FOR UPDATE
-          `,
-          [pago.cuota_id]
-        );
-
-      const totalPagado =
-        Number(
-          totalResult.rows[0]
-            .total_pagado || 0
-        );
-
-      const montoCuota =
-        Number(
-          cuotaResult.rows[0]
-            ?.monto || 0
-        );
-
-      /*
-        Si se cubrió el monto completo,
-        marcamos la cuota como pagada.
-      */
-
-      if (
-        totalPagado >= montoCuota
-      ) {
-        await client.query(
-          `
-          UPDATE cuotas_club
-
-          SET estado = 'pagado'
-
-          WHERE id = $1
-          `,
-          [pago.cuota_id]
-        );
-      }
-
-      await client.query(
-        "COMMIT"
-      );
-
-      res.json({
-        mensaje:
-          totalPagado >= montoCuota
-            ? "Pago aprobado y cuota marcada como pagada."
-            : "Pago aprobado. La cuota todavía tiene saldo pendiente.",
-
-        totalPagado,
-        montoCuota,
-
-        cuotaPagada:
-          totalPagado >=
-          montoCuota,
-      });
-
-    } catch (error) {
-      await client.query(
-        "ROLLBACK"
-      );
-
-      console.error(
-        "Error aprobando pago:",
-        error
-      );
-
-      res.status(500).json({
-        mensaje:
-          "No se pudo aprobar el pago.",
-      });
-
-    } finally {
-      client.release();
-    }
-  }
-);
-
-
-/* =========================================================
-   RECHAZAR PAGO
-========================================================= */
-
-router.patch(
-  "/:id/rechazar",
-  async (req, res) => {
-    try {
-      const {
-        observacion = "",
-      } = req.body;
-
-      const resultado =
-        await pool.query(
-          `
-          UPDATE pagos_cuotas
-
-          SET
-            estado = 'rechazado',
-            observacion = $1,
-            fecha_revision =
-              CURRENT_TIMESTAMP
-
-          WHERE
-            id = $2
-            AND estado = 'pendiente'
-
-          RETURNING *
-          `,
-          [
-            observacion ||
-              "Pago rechazado.",
-            req.params.id,
-          ]
-        );
-
-      if (
-        resultado.rows.length === 0
-      ) {
-        return res
-          .status(404)
-          .json({
-            mensaje:
-              "Pago no encontrado o ya revisado.",
-          });
-      }
-
-      res.json({
-        mensaje:
-          "Pago rechazado.",
-
-        pago:
-          resultado.rows[0],
-      });
-
-    } catch (error) {
-      console.error(
-        "Error rechazando pago:",
-        error
-      );
-
-      res.status(500).json({
-        mensaje:
-          "No se pudo rechazar el pago.",
-      });
-    }
-  }
-);
-
-
+router.post('/', async (req,res) => res.status(201).json({ mensaje: 'Pago registrado para revisión.', pago: await transaccion(db => registrarPago(db,req.usuario.id,req.body)) }));
+router.get('/:id/comprobante', async(req,res) => {
+ const pago=(await pool.query('SELECT comprobante_url FROM pagos_cuotas WHERE id=$1',[req.params.id])).rows[0];
+ const file=path.basename(pago?.comprobante_url||'');
+ if(!/\.(png|jpe?g|webp)$/i.test(file))throw fallo(404,'Comprobante no disponible.');
+ res.setHeader('X-Content-Type-Options','nosniff');res.sendFile(file,{root:fileURLToPath(new URL('../uploads/',import.meta.url))});
+});
+router.patch('/:id/anular',roles('jefe'),async(req,res)=>res.json(await transaccion(db=>revisarPago(db,req.usuario.id,req.params.id,'anular',req.body?.motivo||req.body?.observacion))));
+router.patch('/:id/:accion',async(req,res)=>{
+ if(!['aprobar','rechazar'].includes(req.params.accion))throw fallo(404,'Acción no encontrada.');
+ res.json(await transaccion(db=>revisarPago(db,req.usuario.id,req.params.id,req.params.accion,req.body?.observacion)));
+});
 export default router;
